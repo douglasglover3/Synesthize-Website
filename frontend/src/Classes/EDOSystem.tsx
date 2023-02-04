@@ -1,14 +1,22 @@
 // Constants representing interval length (in cents)
-const OCTAVE = 1200;
-const PERFECT_5TH = 702;
-const PERFECT_4TH = 498;
-const MAJOR_3RD = 386;
-const MINOR_3RD = 316;
 
 // Tuning frequency used by program (in Hertz)
 const A4_FREQ = 440;
 
 export class EDOSystem {
+    // Store each interval length in cents
+    static Intervals = Object.freeze({
+        Octave: 1200,
+        PerfectFifth: 702,
+        PerfectFourth: 498,
+        MajorThird: 386,
+        MinorThird: 316
+    });
+
+    // Store which intervals are being tracked
+    static numIntervals: number = Object.keys(EDOSystem.Intervals).length;
+    static trackedIntervals: boolean[] = Array(EDOSystem.numIntervals).fill(true);
+
     // Store basics of EDO system
     private tonality: number;
     private toneList;
@@ -21,21 +29,24 @@ export class EDOSystem {
     private majorThird: number;
     private minorThird: number;
 
-    // Store EDO's circle-of-fifths for major/minor scales (used in Level 1 color-mapping)
+    // Store EDO's circle-of-fifths for major/minor scales (for use in future versions)
     private circleOf5thsMaj: number[];
     private circleOf5thsMin: number[];
 
     // Builds an EDO system with <tones> number of tones
     constructor (tones: number) {
+        // Get reference to <Intervals> object for knowing interval lengths
+        let intervals = EDOSystem.Intervals;
+
         this.tonality = tones;
         this.toneList = EDOSystem.getNoteArrayByTonality(tones);
-        this.semitone = OCTAVE / tones;
+        this.semitone = intervals.Octave / tones;
 
         this.octave = tones;    // Octave already defined by <tones>
-        this.perfectFifth = Math.round(PERFECT_5TH / this.semitone);
-        this.perfectFourth = Math.round(PERFECT_4TH / this.semitone);
-        this.majorThird = Math.round(MAJOR_3RD / this.semitone);
-        this.minorThird = Math.round(MINOR_3RD / this.semitone);
+        this.perfectFifth = Math.round(intervals.PerfectFifth / this.semitone);
+        this.perfectFourth = Math.round(intervals.PerfectFourth / this.semitone);
+        this.majorThird = Math.round(intervals.MajorThird / this.semitone);
+        this.minorThird = Math.round(intervals.MinorThird / this.semitone);
 
         this.circleOf5thsMaj = this.calcCircleOf5thsMaj();
         this.circleOf5thsMin = this.calcCircleOf5thsMin();
@@ -97,5 +108,42 @@ export class EDOSystem {
         let octave = Math.floor((this.toneList.A + notesAwayFromA4) / this.tonality) + 4;
 
         return {note: notePosition, octave: octave};
+    }
+
+    // Track/Untrack the interval at <index> in <trackedIntervals>
+    public static changeTrackedInterval(index: number): void {
+        EDOSystem.trackedIntervals[index] = !EDOSystem.trackedIntervals[index];
+    }
+
+    // Return a hue based on the passed-in interval
+    public getIntervalColor(prevNote: number, newNote: number): string {
+        // Base-case (<prevNote> does not exist)
+        if (prevNote === -1) return "#000000";
+
+        let interval: number = (newNote - prevNote + this.tonality) % this.tonality;
+        let tracked: boolean[] = EDOSystem.trackedIntervals;
+        let keys: string[] = Object.keys(EDOSystem.Intervals);
+
+        // Octave detected
+        if (interval === this.octave && tracked[keys.indexOf('Octave')])
+            return "#000000";
+
+        // Perfect-fifth detected
+        if (interval === this.perfectFifth && tracked[keys.indexOf('PerfectFifth')])
+            return "#ff5100";
+
+        // Perfect-fourth detected
+        if (interval === this.perfectFourth && tracked[keys.indexOf('PerfectFourth')])
+            return "#ffd000";
+
+        // Major-third detected
+        if (interval === this.majorThird && tracked[keys.indexOf('MajorThird')])
+            return "#00ffb7";
+
+        // Minor-third detected
+        if (interval === this.minorThird && tracked[keys.indexOf('MinorThird')])
+            return "#8400ff";
+
+        return "#000000";
     }
 }

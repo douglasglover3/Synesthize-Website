@@ -1,0 +1,110 @@
+html {
+    background-color: #150050;
+}
+
+/* General Stylings */
+.background {
+    background-color: #150050;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    font-size: 38px;
+    color: #fb2576;
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 28px;
+    color: #fb2576;
+    font-weight: 500;
+}
+
+.input-label {
+    font-size: 20px;
+    color: white;
+    font-weight: 500;
+    padding-bottom: 0.7vh;
+}
+
+.input-field {
+    border: solid;
+    border-color: black;
+    border-width: 4px;
+    background-color: #3f0071;
+    width: 25%;
+    height: 4vh;
+    color: white;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.button {
+    border: solid;
+    border-color: black;
+    border-width: 4px;
+    background-color: #3f0071;
+    width: auto;
+    margin: 1vh;
+    height: auto;
+    font-size: 20px;
+    font-weight: 400;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+.button:hover {
+    background-color: #73338a;
+}
+
+#volume-slider {
+    width: 90%;
+}
+
+/* Styles the notes in ColorSelector */
+.note-grid {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    padding: 2rem;
+}
+
+.note-grid > .note {
+    flex: 1 1 15%;
+    padding-top: 2vh;
+    padding-right: 3vw;
+}
+
+.play-note {
+    height: 2vw;
+    cursor: pointer;
+}
+
+.note {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: .5vw;
+    height: auto;
+}
+
+.note-color {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-color: transparent;
+}
+
+.note-color:hover {
+    opacity: 0.8;
+}

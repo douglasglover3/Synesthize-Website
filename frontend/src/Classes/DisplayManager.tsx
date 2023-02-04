@@ -1,78 +1,73 @@
+import React from "react";
 import { textChangeRangeIsUnchanged } from "typescript";
-import { color_canvas } from "../Classes/ColorDisplay"
+import { ColorCanvas } from "../Classes/ColorDisplay";
+import { EDOSystem } from "../Classes/EDOSystem";
 
 const display_threshold = 5
 
-export class DisplayManager {
-	layers: color_canvas[];
-	counters: number[];
-	tonality: number
-	display_flag = false
+// TODO: Replace with extensible EDO system
+let edo = new EDOSystem(12);
+
+export class DisplayManager{
+	canvas: ColorCanvas;
+	counter: number;
+	tonality: number;
+	currNote: number;
+	prevNote;
+	currentScheme: string[]
 
 	constructor(tonality:number) {
-		document.getElementById('canvas_space').replaceChildren()
-
-		this.layers = new Array()
-		this.counters = new Array()
+		this.canvas = new ColorCanvas('c1')
+		this.counter = 0
 		this.tonality = tonality
+		this.currNote = -1;		// No note current playing
+		this.prevNote = -1;		// No note played before it
+		this.currentScheme = new Array()
 
-		for (let i = 0; i < tonality; i++) {
-			this.layers[i] = new color_canvas('c' + i, '#000000')
-			this.counters[i] = 0
+		for (let i = 0; i < this.tonality; i++) {
+			this.currentScheme[i] = '#000000'
 		}
 
 	}
 
 	change_scheme(new_scheme) {
 		for(let i = 0; i < this.tonality; i++) {
-			this.layers[i].update_color(new_scheme.notes[i]) 
+			this.currentScheme[i] = new_scheme.notes[i]
 		}
-	}
-
-	check_all_inactive() {
-		let res = true
-		for(let i = 0; i < this.tonality; i++)
-		{
-			if(!this.layers[i].check_inactive()) {
-				res = false
-			}
-			
-		}
-		return res
 	}
 
 	display(note:number, octave:number) {
-		if(isNaN(note) || isNaN(octave)) {
-			return
+		if(this.currNote == -1 && !Number.isNaN(note)){ // set first seen note
+			this.currNote = note;
+			this.prevNote = note
+		}
+		else if(this.counter <= 0) {
+			this.currNote = note
+		}
+
+		if(note == this.currNote) {
+			this.counter += 1
 		}
 		else {
-			this.counters[note] += 1
-			for(let i = 0; i < this.tonality; i++) {
-				if (i != note) {
-					this.counters[i] -= 1
-				}
-				if (this.counters[i] <= 0) {
-					this.counters[i] = 0
-					if(this.layers[i].check_active_idle()) {
-						console.log("REMOVING COLOR - ", i)
-						this.layers[i].fade_out()
-					}
-					
-				}
-			}
-			if(this.counters[note] >= display_threshold) {
-				this.counters[note] = display_threshold
-				if(this.check_all_inactive()) {
-					console.log("DISPLAYING COLOR - " , note, " ", octave, " ", this.layers[note].color)
-					this.layers[note].draw_new(octave)
-				}
-				
-			}
-			//console.log(note, this.counters[note], this.display_flag)
-			//console.log(this.display_flag, this.counters)
+			this.counter -= 1
 		}
-		
 
-		
+
+		if(this.counter >= display_threshold) {
+			this.counter = display_threshold
+			if(this.canvas.check_inactive()) {
+				let intervalColor = edo.getIntervalColor(this.currNote, this.prevNote)
+				this.canvas.draw_new(this.currentScheme[note], octave, intervalColor)
+			}
+		}
+		else if(this.counter <= 0) {
+			this.counter = 0
+			if(this.canvas.check_active()) {
+				this.canvas.fade_out()
+				if(!Number.isNaN(this.currNote)) {
+					this.prevNote = this.currNote
+				}
+			}
+		}
 	}
 }

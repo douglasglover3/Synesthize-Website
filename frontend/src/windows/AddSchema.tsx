@@ -1,11 +1,8 @@
 import { useState } from 'react';
-//import { SchemeFunctions } from '../Classes/SchemeFunctions';
 import { setVol } from '../Classes/AudioFunctions';
 import ColorSelector from '../components/ColorSelector';
 
-//Not for website
-//const fs = window.require('fs');
-//const path = window.require('path');
+import '../css/AddEditScheme.css';
 
 export default function AddSchema() {
   const [volume, setVolume] = useState(50);
@@ -30,9 +27,9 @@ export default function AddSchema() {
     setVol(volumeVal);      // In AudioFunctions.tsx
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    //let schemes = SchemeFunctions.getSchemes();
+  const handleSubmit = () => {
+    // TODO: Store list of current schemes via cookies/database
+    let schemes = [];
 
     // Error-handling to prevent special characters
     if (!name.match(/^[0-9a-zA-Z]+$/)) {
@@ -41,12 +38,12 @@ export default function AddSchema() {
     }
 
     // Error-handling to prevent duplicate names
-    // for (let i = 0; i < schemes.length; i++) {
-    //   if (schemes[i].name === name) {
-    //     setError('Sorry! A color-scheme with that name already exists');
-    //     return;
-    //   }
-    // }
+    for (let i = 0; i < schemes.length; i++) {
+      if (schemes[i].name === name) {
+        setError('Sorry! A color-scheme with that name already exists');
+        return;
+      }
+    }
 
     setError('');
 
@@ -67,30 +64,27 @@ export default function AddSchema() {
 
     // Saves new scheme into file AND into schemes array
     let schemeObj = {name: name, notes: noteArray};
-    //Not for website
-    //let filePath = path.join('src', 'schemes', schemeObj.name + '.json');
-    //fs.writeFileSync(filePath, JSON.stringify(schemeObj));
-    //SchemeFunctions.addScheme(schemeObj);
     window.location.href = '/';
   }
 
   return (
-    <div>
-      <span>Add New Color Scheme</span> <br /> <br />
+    <div className='background'>
+      <span className='title'>Add Scheme</span>
+      <span className='subtitle'>Create your color profile</span> <br /> <br />
 
-      <span>Volume Slider</span>
+    <label className='input-label'>Scheme Name</label>
+    <input type="text" className='input-field'
+      required autoFocus
+      value = {name} onChange = {(e) => setName(e.target.value.trim())} />
+    <span>{error}</span> <br />
+
+    <label className='input-label'>Volume Slider</label>
+    <div className='input-field'>
       <input type="range" id='volume-slider'
-        value={volume} onChange={handleVolume} /> <br /> <br />
+        value={volume} onChange={handleVolume} />
+    </div>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name Your Scheme: </label>
-          <input type="text" id="name"
-            required autoFocus
-            value = {name} onChange = {(e) => setName(e.target.value.trim())}/>
-        </div>
-        <span>{error}</span> <br /> <br />
-
+      <div className='note-grid'>
         <ColorSelector noteName='C' noteColor={C} setNote={setC} />
         <ColorSelector noteName='Db' noteColor={Db} setNote={setDb} />
         <ColorSelector noteName='D' noteColor={D} setNote={setD} />
@@ -103,10 +97,10 @@ export default function AddSchema() {
         <ColorSelector noteName='A' noteColor={A} setNote={setA} />
         <ColorSelector noteName='Bb' noteColor={Bb} setNote={setBb} />
         <ColorSelector noteName='B' noteColor={B} setNote={setB} />
+      </div>
 
-        <input type="submit" value="Submit" />
-      </form>
-      <button type="button" onClick={() => {window.location.href='/'}}>Cancel</button>
+      <button type='button' className='button' onClick={handleSubmit}>Add Scheme</button>
+      <button type="button" className='button' onClick={() => {window.location.href='/'}}>Cancel</button>
     </div>
   );
 }
