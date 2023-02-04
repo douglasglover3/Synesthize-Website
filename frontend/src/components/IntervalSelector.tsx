@@ -7,7 +7,7 @@ export default function IntervalSelector() {
 
     // Flip element at index of <selectedIntervals>
     const handleSelect = (e): void => {
-        const selectedInd: number = e.target.value;
+        const selectedInd: number = parseInt(e.target.value);
         const newIntervals: boolean[] = selectedIntervals.map((curr, i) => {
             if (i === selectedInd)
                 return !curr;

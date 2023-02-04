@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EDOSystem } from '../Classes/EDOSystem';
+import defaultSchemes from '../schemes/defaultSchemes'; 
 
 type Scheme = {
 	name: string,
@@ -9,7 +10,7 @@ type Scheme = {
 
 export default function SchemeDropdown({ setSchemeInMain }) {
 	let _12tEDO = new EDOSystem(12);
-	let schemes: Scheme[] = [{name:"", notes:["#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000"]}];
+	let schemes: Scheme[] = [].concat(defaultSchemes);
 	let toneList = _12tEDO.getToneList();
 	let ind = 0;
 
@@ -45,7 +46,7 @@ export default function SchemeDropdown({ setSchemeInMain }) {
 
 		let confirmDelete = window.confirm('Are you sure you want to delete this scheme?');
 		if (confirmDelete) {
-			// SchemeFunctions.deleteScheme(selectedScheme);
+			// TODO: Implement way to delete scheme from cookie/database
 			setMessage('Scheme was successfully deleted');
 			setSelectedScheme(schemes[0]);
 		}
