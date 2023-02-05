@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EDOSystem } from '../Classes/EDOSystem';
+import { isDefaultScheme } from '../Classes/SchemeFunctions';
 import defaultSchemes from '../schemes/defaultSchemes'; 
 
 type Scheme = {
@@ -37,9 +38,8 @@ export default function SchemeDropdown({ setSchemeInMain }) {
 	}
 
 	const handleDelete = (): void => {
-		// TODO: Update to work without file I/O
 		// Don't let user delete default schemes
-		if (true) {
+		if (isDefaultScheme(selectedScheme.name)) {
 			setMessage('Sorry! Can\'t delete default schemes');
 			return;
 		}
@@ -53,9 +53,8 @@ export default function SchemeDropdown({ setSchemeInMain }) {
 	}
 
 	const handleEdit = (): void => {
-		// TODO: Update to work without file I/O
 		// Don't let user edit default schemes
-		if (true) {
+		if (isDefaultScheme(selectedScheme.name)) {
 			setMessage('Sorry! Can\'t edit default schemes');
 			return;
 		}
