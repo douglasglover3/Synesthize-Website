@@ -1,4 +1,5 @@
 import React from "react";
+import { convertCompilerOptionsFromJson } from "typescript";
 const animation_speed = 50; // time between animation calls in ms
 
 function to_hsl(color: string, intervalColor: string, octave: number) {
@@ -97,7 +98,7 @@ export class ColorCanvas extends React.Component{
       {dislpay:'block',
       left: "0px" ,
       bottom: "0px" ,
-      background : "#e0e0e0",
+      background : "#000000",
       width: '100%',
       height: '100%',
       WebkitFilter: "blur(3px)"}
@@ -111,10 +112,6 @@ export class ColorCanvas extends React.Component{
   set_ctx(){
     this.c = document.getElementById('ColorCanvas');
     this.ctx = this.c.getContext('2d');
-
-    // these are here to ensure that draw functions properly
-    this.c.width = this.style.width;
-    this.c.height = this.style.height;
   }
 
   draw_new(color: string, octave: number, intervalColor: string) {
@@ -144,9 +141,10 @@ export class ColorCanvas extends React.Component{
   draw() {
 
     if (this.ctx != null) {
-      this.c.width = window.innerWidth;
-      this.c.height = window.innerHeight-240;
-
+      let backgroundHeight = document.getElementById('background').clientHeight
+      this.c.width = window.innerWidth
+      this.c.height = window.innerHeight - backgroundHeight;
+      
       this.clear()
       this.ctx.fillStyle = this.dis_color;
       this.ctx.beginPath()
