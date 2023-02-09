@@ -9,9 +9,14 @@ type Scheme = {
 	notes: string[]
 }
 
-export default function SchemeDropdown({ setSchemeInMain }) {
+export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies}) {
 	let _12tEDO = new EDOSystem(12);
-	let schemes: Scheme[] = [].concat(defaultSchemes);
+	let schemes: Scheme[] = defaultSchemes;
+
+	//if cookies exist, load them
+	if(cookies.schemeList !== undefined)
+		schemes = schemes.concat(cookies.schemeList);
+
 	let toneList = _12tEDO.getToneList();
 	let ind = 0;
 
@@ -46,7 +51,10 @@ export default function SchemeDropdown({ setSchemeInMain }) {
 
 		let confirmDelete = window.confirm('Are you sure you want to delete this scheme?');
 		if (confirmDelete) {
-			// TODO: Implement way to delete scheme from cookie/database
+			let schemeArray = cookies.schemeList;
+			schemeArray = schemeArray.filter(scheme => scheme !== selectedScheme);
+    		setCookie("schemeList", schemeArray, { path: "/"});
+			schemes = defaultSchemes.concat(schemeArray);
 			setMessage('Scheme was successfully deleted');
 			setSelectedScheme(schemes[0]);
 		}

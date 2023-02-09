@@ -9,7 +9,7 @@ import { ColorCanvas } from '../Classes/ColorDisplay';
 
 import '../css/MainWindow.css';
 
-export default function MainWindow() {
+export default function MainWindow({setCookie, cookies}) {
 	let wave_display_flag = 0
 
 	let TONES: number = 12;
@@ -84,7 +84,7 @@ export default function MainWindow() {
 				<div className='subsection-2'>
 					<div className='color-options'>
 						<label className='subtitle'>Color Schemes</label> <br /> <br />
-						<SchemeDropdown setSchemeInMain={setSchemeInMain} />
+						<SchemeDropdown setSchemeInMain={setSchemeInMain} setCookie={setCookie} cookies={cookies}/>
 					</div>
 					<div className='interval-options'>
 						<label className='subtitle'>Tracked Intervals</label> <br /> <br />

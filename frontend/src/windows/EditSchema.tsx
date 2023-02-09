@@ -5,7 +5,7 @@ import ColorSelector from '../components/ColorSelector';
 
 import '../css/AddEditScheme.css';
 
-export default function EditSchema() {
+export default function EditSchema({setCookie, cookies}) {
   const location = useLocation();
   let selectedScheme = location.state.scheme;
   let originalName = selectedScheme.name;
@@ -67,14 +67,18 @@ export default function EditSchema() {
 	  noteArray.push(Bb);
 	  noteArray.push(B);
 
-	  let schemeObj = {name: name, notes: noteArray};
+    // Saves new scheme into cookies
+    let schemeObj = {name: name, notes: noteArray};
+    let schemeArray = cookies.schemeList;
+    console.log(schemeArray)
 
-    // TODO: Implement this without file I/O
-    // See whether or not filename for scheme needs to be changed
-    if (name !== originalName) {
-      // Need to change filename
-    }
-
+    for (let i = 0; i < schemeArray.length; i++) {
+			if (originalName === schemeArray[i].name) {
+				schemeArray[i] = schemeObj;
+				break;
+			}
+		}
+    setCookie("schemeList", schemeArray, { path: "/"});
 	  window.location.href ='/';
   }
 

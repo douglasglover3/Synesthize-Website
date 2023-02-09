@@ -4,7 +4,7 @@ import ColorSelector from '../components/ColorSelector';
 
 import '../css/AddEditScheme.css';
 
-export default function AddSchema() {
+export default function AddSchema({setCookie, cookies}) {
   const [volume, setVolume] = useState(50);
   const [name, setName] = useState('');
   const [error, setError] = useState('');
@@ -62,8 +62,13 @@ export default function AddSchema() {
     noteArray.push(Bb);
     noteArray.push(B);
 
-    // Saves new scheme into file AND into schemes array
+    // Saves new scheme into cookies
     let schemeObj = {name: name, notes: noteArray};
+    if(cookies.schemeList === undefined)
+      setCookie("schemeList", [], { path: "/"});
+    let schemeArray = cookies.schemeList;
+    schemeArray.push(schemeObj);
+    setCookie("schemeList", schemeArray, { path: "/"});
     window.location.href = '/';
   }
 
