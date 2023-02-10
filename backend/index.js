@@ -58,21 +58,60 @@ app.post("/users/register", async (req, res) => {
 // Add Scheme API
 app.post("/schemes/add", async (req, res) => {
     try {
-        const {user_id, name, notes} = req.body;
+        const {userID, name, notes} = req.body;
 
-        if (!(await User.findById(user_id))) {
+        if (!(await User.findById(userID))) {
             throw new Error("User not found");
         }
 
-        if (await ColorScheme.findOne({user_id, name}))
+        if (await ColorScheme.findOne({userID, name}))
         {
             throw new Error("A color-scheme with that name already exists");
         }
 
-        const newSchemeData = new ColorScheme({user_id, name, notes});
+        const newSchemeData = new ColorScheme({userID, name, notes});
         const newScheme = await newSchemeData.save();
 
         res.status(201).json(newScheme);
+    }
+    catch (error) {
+        res.status(400).json({message: error.message});
+    }
+});
+
+// Edit Scheme API
+app.put("/schemes/edit", async (req, res) => {
+    try {
+        const {userId, name, newName, notes} = req.body;
+
+        if (!(await User.findById(userId))) {
+            throw new Error("User not found");
+        }
+
+        const scheme = await ColorScheme.findOne({userId, name})
+
+        if (!scheme)
+        {
+            throw new Error("Color-scheme not found");
+        }
+
+        if (newName)
+        {
+            if (await ColorScheme.findOne({userId, name: newName}))
+            {
+                throw new Error("A color-scheme with that name already exists");
+            }
+
+            scheme.name = newName;
+        }
+
+        if (notes)
+        {
+            scheme.notes = notes;
+        }
+
+        const updatedScheme = await scheme.save();
+        res.status(200).json(updatedScheme);
     }
     catch (error) {
         res.status(400).json({message: error.message});

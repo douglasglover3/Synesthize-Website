@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const ColorSchemeSchema = new mongoose.Schema({
-    user_id: {
+    userId: {
         type: String,
         required: true
     },
