@@ -27,7 +27,7 @@ router.post("/users/register", async (req, res) => {
         const {username, password} = req.body;
 
         if (await User.findOne({username})) {
-            throw new Error(`Username ${username} is already taken`);
+            throw new Error(`Username '${username}' is already taken`);
         }
         
         const newUserData = new User({username, password});
