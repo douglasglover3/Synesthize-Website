@@ -13,7 +13,7 @@ const ColorSchemeSchema = new mongoose.Schema({
         type: [String],
         required: true
     }
-})
+});
 
-const ColorSchemeModel = mongoose.model("ColorScheme", ColorSchemeSchema, "ColorSchemes")
+const ColorSchemeModel = mongoose.model("ColorScheme", ColorSchemeSchema, "ColorSchemes");
 module.exports = ColorSchemeModel;

@@ -16,8 +16,7 @@ router.post("/users/login", async (req, res) => {
         }
 
         res.status(200).json(user);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(400).json({message: error.message});
     }
 });
@@ -35,8 +34,7 @@ router.post("/users/register", async (req, res) => {
         const newUser = await newUserData.save();
 
         res.status(201).json(newUser);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(400).json({message: error.message});
     }
 });
@@ -47,8 +45,7 @@ router.get("/schemes/", async (req, res) => {
         const {userId} = req.body;
         const allSchemes = await ColorScheme.find(userId ? {userId} : {});
         res.status(200).json(allSchemes);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(400).json({message: error.message});
     }
 });
@@ -62,8 +59,7 @@ router.post("/schemes/", async (req, res) => {
             throw new Error("User not found");
         }
 
-        if (await ColorScheme.findOne({userId, name}))
-        {
+        if (await ColorScheme.findOne({userId, name})) {
             throw new Error("A color-scheme with that name already exists");
         }
 
@@ -71,8 +67,7 @@ router.post("/schemes/", async (req, res) => {
         const newScheme = await newSchemeData.save();
 
         res.status(201).json(newScheme);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(400).json({message: error.message});
     }
 });
@@ -88,30 +83,25 @@ router.put("/schemes/", async (req, res) => {
 
         const scheme = await ColorScheme.findOne({userId, name})
 
-        if (!scheme)
-        {
+        if (!scheme) {
             throw new Error("Color-scheme not found");
         }
 
-        if (newName)
-        {
-            if (await ColorScheme.findOne({userId, name: newName}))
-            {
+        if (newName) {
+            if (await ColorScheme.findOne({userId, name: newName})) {
                 throw new Error("A color-scheme with that name already exists");
             }
 
             scheme.name = newName;
         }
 
-        if (notes)
-        {
+        if (notes) {
             scheme.notes = notes;
         }
 
         const updatedScheme = await scheme.save();
         res.status(200).json(updatedScheme);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(400).json({message: error.message});
     }
 });
@@ -127,15 +117,13 @@ router.delete("/schemes/", async (req, res) => {
 
         const scheme = await ColorScheme.findOne({userId, name})
 
-        if (!scheme)
-        {
+        if (!scheme) {
             throw new Error("Color-scheme not found");
         }
 
         const potato = scheme.remove();
         res.status(204).json(potato);
-    }
-    catch (error) {
+    } catch (error) {
         res.status(400).json({message: error.message});
     }
 });

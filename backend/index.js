@@ -2,10 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-// Get database models
-const User = require("./models/User.js");
-const ColorScheme = require("./models/ColorScheme.js");
-
 // Get port and mongodb info from .env file
 require("dotenv").config();
 const port = process.env.PORT;
@@ -20,7 +16,7 @@ app.use(express.json());
 mongoose.connect(mongodb_uri);
 
 // Get API routes
-const routes = require('./routes/routes.js')
+const routes = require('./routes/routes.js');
 app.use("", routes);
 
 app.listen(port, () => {
