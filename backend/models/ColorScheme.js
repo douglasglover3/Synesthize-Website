@@ -5,15 +5,13 @@ const ColorSchemeSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    scheme: {
-        name: {
-            type: String,
-            required: true
-        },
-        notes: {
-            type: [String],
-            required: true
-        }
+    name: {
+        type: String,
+        required: true
+    },
+    notes: {
+        type: [String],
+        required: true
     }
 })
 
