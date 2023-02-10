@@ -19,6 +19,24 @@ app.use(express.json());
 // Connect to database
 mongoose.connect(mongodb_uri);
 
+// Login API
+app.post("/users/login", async (req, res) => {
+    try {
+        const {username, password} = req.body;
+        const user = await User.findOne({username});
+
+        if (!user || password !== user.password) {
+            throw new Error(`Username or password is incorrect`);
+        }
+
+        res.status(200).json(user);
+    }
+    catch (error) {
+        res.status(400).json({message: error.message});
+    }
+});
+
+// Register API
 app.post("/users/register", async (req, res) => {
     try {
         const {username, password} = req.body;
@@ -37,6 +55,7 @@ app.post("/users/register", async (req, res) => {
     }
 });
 
+// Add Scheme API
 app.post("/schemes/add", async (req, res) => {
     try {
         const {user_id, name, notes} = req.body;
