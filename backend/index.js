@@ -19,10 +19,17 @@ app.use(express.json());
 mongoose.connect(mongodb_uri);
 
 app.post("/users/register", async (req, res) => {
-    const newUserData = new User({...req.body});
-    
     try {
+        const username = req.body.username;
+        const password = req.body.password;
+
+        if (await User.findOne({username})) {
+            throw new Error(`Username ${username} is already taken`);
+        }
+        
+        const newUserData = new User({username, password});
         const newUser = await newUserData.save();
+
         res.status(201).json(newUser);
     }
     catch (error) {
