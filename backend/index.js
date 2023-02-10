@@ -1,18 +1,34 @@
-const express = require("express")
+const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors")
+const cors = require("cors");
 
-//Gets port and mongodb info from .env file
+// Import User model
+const User = require("./models/User.js");
+
+// Get port and mongodb info from .env file
 require("dotenv").config();
 const port = process.env.PORT;
 const mongodb_uri = process.env.MONGODB_URI;
 
-//connects to frontend
-const app = express()
+// Connect to frontend
+const app = express();
 app.use(cors());
+app.use(express.json());
 
-//connects to database
-mongoose.connect(mongodb_uri)
+// Connect to database
+mongoose.connect(mongodb_uri);
+
+app.post("/users/register", async (req, res) => {
+    const newUserData = new User({...req.body});
+    
+    try {
+        const newUser = await newUserData.save();
+        res.status(201).json(newUser);
+    }
+    catch (error) {
+        res.status(400).json({message: error.message});
+    }
+});
 
 app.listen(port, () => {
     console.log("Server is working.");
