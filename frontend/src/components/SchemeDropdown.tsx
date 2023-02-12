@@ -11,11 +11,12 @@ type Scheme = {
 
 export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies}) {
 	let _12tEDO = new EDOSystem(12);
-	let schemes: Scheme[] = defaultSchemes;
-
+	let cookieSchemes = [];
 	//if cookies exist, load them
 	if(cookies.schemeList !== undefined)
-		schemes = schemes.concat(cookies.schemeList);
+		cookieSchemes = cookies.schemeList
+		
+	const [schemes, setSchemes] = useState(defaultSchemes.concat(cookieSchemes))
 
 	let toneList = _12tEDO.getToneList();
 	let ind = 0;
@@ -54,7 +55,7 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies}) {
 			let schemeArray = cookies.schemeList;
 			schemeArray = schemeArray.filter(scheme => scheme !== selectedScheme);
     		setCookie("schemeList", schemeArray, { path: "/"});
-			schemes = defaultSchemes.concat(schemeArray);
+			setSchemes(defaultSchemes.concat(schemeArray));
 			setMessage('Scheme was successfully deleted');
 			setSelectedScheme(schemes[0]);
 		}
