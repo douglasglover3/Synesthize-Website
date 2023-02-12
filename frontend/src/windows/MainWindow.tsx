@@ -6,6 +6,7 @@ import MicInput from "../components/MicInput";
 import {EDOSystem} from "../Classes/EDOSystem";
 import {DisplayManager} from "../Classes/DisplayManager"
 import { ColorCanvas } from '../Classes/ColorDisplay';
+import Navbar from '../components/navbar';
 
 import '../css/MainWindow.css';
 
@@ -77,6 +78,7 @@ export default function MainWindow({setCookie, cookies}) {
 
 	return (
 		<div>
+			<Navbar/>
 			<div id='background' className='background'>
 				<span className='title'>Synesthize</span>
 				<span className='subtitle'>A Sound to Color Application</span> <br />

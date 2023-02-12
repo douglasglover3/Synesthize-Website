@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { setVol } from '../Classes/AudioFunctions';
 import ColorSelector from '../components/ColorSelector';
+import Navbar from '../components/navbar';
 
 import '../css/AddEditScheme.css';
 
@@ -84,6 +85,7 @@ export default function EditSchema({setCookie, cookies}) {
 
   return (
     <div className='background'>
+      <Navbar/>
       <span className='title'>Edit Scheme</span>
       <span className='subtitle'>Change your color profile</span> <br /> <br />
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Navbar from '../components/navbar';
 
 import '../css/LoginRegister.css';
 
@@ -12,6 +13,8 @@ export default function Login() {
     }
     
     return (
+        <div>
+            <Navbar/>
         <div className='form-container' id='login-register-background'>
             <form className='login-form' onSubmit={handleSubmit}>
                 <label htmlFor="email">Email</label>
@@ -21,6 +24,7 @@ export default function Login() {
                 <button type="button">Login</button>
             </form> <br />
             <button className='linkToNextPage' onClick={() => window.location.href='/register'}>Register new account</button>
+        </div>
         </div>
     )
 }

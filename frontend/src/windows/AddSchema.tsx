@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { setVol } from '../Classes/AudioFunctions';
 import ColorSelector from '../components/ColorSelector';
+import Navbar from '../components/navbar';
 
 import '../css/AddEditScheme.css';
 
@@ -74,6 +75,7 @@ export default function AddSchema({setCookie, cookies}) {
 
   return (
     <div className='background'>
+      <Navbar/>
       <span className='title'>Add Scheme</span>
       <span className='subtitle'>Create your color profile</span> <br /> <br />
 
