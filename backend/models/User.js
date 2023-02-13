@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-})
+});
 
-const UserModel = mongoose.model("Users", UserSchema)
+const UserModel = mongoose.model("User", UserSchema, "Users");
 module.exports = UserModel;

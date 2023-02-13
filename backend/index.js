@@ -1,18 +1,23 @@
-const express = require("express")
+const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors")
+const cors = require("cors");
 
-//Gets port and mongodb info from .env file
+// Get port and mongodb info from .env file
 require("dotenv").config();
 const port = process.env.PORT;
 const mongodb_uri = process.env.MONGODB_URI;
 
-//connects to frontend
-const app = express()
+// Connect to frontend
+const app = express();
 app.use(cors());
+app.use(express.json());
 
-//connects to database
-mongoose.connect(mongodb_uri)
+// Connect to database
+mongoose.connect(mongodb_uri);
+
+// Get API routes
+const routes = require('./routes/routes.js');
+app.use("", routes);
 
 app.listen(port, () => {
     console.log("Server is working.");
