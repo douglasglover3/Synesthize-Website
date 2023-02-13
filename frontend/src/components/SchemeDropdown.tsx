@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { EDOSystem } from '../Classes/EDOSystem';
 import { isDefaultScheme } from '../Classes/SchemeFunctions';
 import defaultSchemes from '../schemes/defaultSchemes'; 
+import SchemeShareLightbox from './SchemeShareLightbox';
 
 type Scheme = {
 	name: string,
@@ -25,6 +26,19 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies}) {
 
 	let [selectedScheme, setSelectedScheme] = useState(schemes[0]);
 	let [message, setMessage] = useState('');
+
+	// For handling the share-scheme lightbox
+	const [lightboxVisible, setLightboxVisible] = useState(false);
+
+	const handleLightboxOpen = (e): void => {
+		// Don't let user share default schemes
+		if (!isDefaultScheme(selectedScheme.name)) {
+			setMessage('Sorry! Can\'t share default schemes');
+			return;
+		}
+
+		setLightboxVisible(!lightboxVisible);
+	}
 
     // Set <currScheme> for both <SchemeDropdown /> and <MainWindow />
     const handleSchemeChange = (e): void => {
@@ -94,7 +108,10 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies}) {
 			</div>
 			<div className='subsection'>
 				<span className='scheme-message'>{message}</span>
-			</div>
+			</div> <br /> <br />
+			<button type='button' className='button' onClick={ handleLightboxOpen }>Share and Receive Schemes</button>
+				<SchemeShareLightbox lightboxVisible={lightboxVisible} setLightboxVisibleInParent={setLightboxVisible}
+					scheme={ selectedScheme } />
         </div>
     );
 }

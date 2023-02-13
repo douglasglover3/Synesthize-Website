@@ -74,11 +74,11 @@ export default function MainWindow({setCookie, cookies}) {
 		let estimate = edo.frequencyToNote(frequencies[0])
 		//console.log(`Estimated note: Note=${estimate.note} Octave=${estimate.octave}`);
 		display_manager.display(estimate.note, estimate.octave)
-	  }
+	}
 
 	return (
 		<div>
-			<Navbar/>
+			<Navbar />
 			<div id='background' className='background'>
 				<span className='title'>Synesthize</span>
 				<span className='subtitle'>A Sound to Color Application</span> <br />
