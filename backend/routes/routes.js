@@ -50,6 +50,30 @@ router.get("/schemes/", async (req, res) => {
     }
 });
 
+// Get all validated Schemes (for showing on main page)
+router.post("/validSchemes/", async(req, res) => {
+    try {
+        const {userId} = req.body;
+        const validSchemes = await ColorScheme.find({userId: userId, validated: true});
+        res.status(200).json(validSchemes);
+    }
+    catch (error) {
+        res.status(400).json({message: error.message});
+    }
+});
+
+// Get all unvalidated Schemes (for allowing User to validate/delete them)
+router.post("/invalidSchemes/", async(req, res) => {
+    try {
+        const {userId} = req.body;
+        const invalidSchemes = await ColorScheme.find({userId: userId, validated: false});
+        res.status(200).json(invalidSchemes);
+    }
+    catch (error) {
+        res.status(400).json({message: error.message});
+    }
+});
+
 // Add Scheme API
 router.post("/schemes/", async (req, res) => {
     try {
@@ -72,6 +96,60 @@ router.post("/schemes/", async (req, res) => {
     }
 });
 
+// Share Scheme API
+router.post("/shareScheme/", async(req, res) => {
+    try {
+        const {username, name, notes} = req.body;
+
+        // Find the user to send the color-scheme to
+        const user = await User.findOne({username});
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        // Get their _id
+        const userId = user._id;
+
+        // Make sure that User doesn't have a color-scheme by that name
+        if (await ColorScheme.findOne({userId, name})) {
+            throw new Error("That user already has a color scheme with that name");
+        }
+
+        // Create this color-scheme but set it as unvalidated
+        const newSchemeData = new ColorScheme({userId, name, notes});
+        newSchemeData.validated = false;
+        const newScheme = await newSchemeData.save();
+
+        res.status(201).json(newScheme);
+    }
+    catch (error) {
+        res.status(400).json({message: error.message});
+    }
+});
+
+// Validate Scheme API
+router.put("/validateScheme/", async(req, res) => {
+    try {
+        const {userId, name} = req.body;
+        if (!(await User.findById(userId))) {
+            throw new Error("User not found");
+        }
+
+        const scheme = await ColorScheme.findOne({userId, name});
+        
+        if (!scheme) {
+            throw new Error("Color-scheme not found");
+        }
+
+        scheme.validated = true;
+        const updatedScheme = await scheme.save();
+        res.status(200).json(updatedScheme);
+    }
+    catch(error) {
+        res.status(400).json({message: error.message});
+    }
+});
+
 // Edit Scheme API
 router.put("/schemes/", async (req, res) => {
     try {
@@ -88,7 +166,7 @@ router.put("/schemes/", async (req, res) => {
         }
 
         if (newName) {
-            if (await ColorScheme.findOne({userId, name: newName})) {
+            if (name != newName && await ColorScheme.findOne({userId, name: newName})) {
                 throw new Error("A color-scheme with that name already exists");
             }
 

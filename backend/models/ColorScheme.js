@@ -12,6 +12,11 @@ const ColorSchemeSchema = new mongoose.Schema({
     notes: {
         type: [String],
         required: true
+    },
+    validated: {
+        type: Boolean,
+        required: true,
+        default: true
     }
 });
 
