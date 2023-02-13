@@ -10,7 +10,7 @@ type Scheme = {
 	notes: string[]
 }
 
-export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies}) {
+export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) {
 	let _12tEDO = new EDOSystem(12);
 	let userSchemes = [];
 

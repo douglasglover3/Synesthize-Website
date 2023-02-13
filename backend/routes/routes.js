@@ -199,8 +199,8 @@ router.delete("/schemes/", async (req, res) => {
             throw new Error("Color-scheme not found");
         }
 
-        const potato = scheme.remove();
-        res.status(204).json(potato);
+        const deletedScheme = scheme.remove();
+        res.status(200).json(deletedScheme);
     } catch (error) {
         res.status(400).json({message: error.message});
     }
