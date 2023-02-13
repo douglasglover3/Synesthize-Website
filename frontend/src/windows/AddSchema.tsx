@@ -29,8 +29,16 @@ export default function AddSchema({setCookie, cookies}) {
   }
 
   const handleSubmit = () => {
-    // TODO: Store list of current schemes via cookies/database
+    // TODO: Get schemes from database or cookies depending on if user is logged in
     let schemes = [];
+    if (localStorage.getItem('synesthizeUserData')) {
+
+    } 
+    else {
+      if(cookies.schemeList === undefined)
+        setCookie("schemeList", [], { path: "/"});
+      schemes = cookies.schemeList;
+    }
 
     // Error-handling to prevent special characters
     if (!name.match(/^[0-9a-zA-Z]+$/)) {
@@ -63,13 +71,17 @@ export default function AddSchema({setCookie, cookies}) {
     noteArray.push(Bb);
     noteArray.push(B);
 
-    // Saves new scheme into cookies
+    // Create new scheme object
     let schemeObj = {name: name, notes: noteArray};
-    if(cookies.schemeList === undefined)
-      setCookie("schemeList", [], { path: "/"});
-    let schemeArray = cookies.schemeList;
-    schemeArray.push(schemeObj);
-    setCookie("schemeList", schemeArray, { path: "/"});
+
+    // TODO: Save to database or cookies depending on if user is logged in
+    if (localStorage.getItem('synesthizeUserData')) {
+
+    }
+    else {
+      schemes.push(schemeObj);
+      setCookie("schemeList", schemes, { path: "/"});
+    }
     window.location.href = '/';
   }
 

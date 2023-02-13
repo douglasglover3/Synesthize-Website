@@ -12,12 +12,18 @@ type Scheme = {
 
 export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies}) {
 	let _12tEDO = new EDOSystem(12);
-	let cookieSchemes = [];
-	//if cookies exist, load them
-	if(cookies.schemeList !== undefined)
-		cookieSchemes = cookies.schemeList
+	let userSchemes = [];
+
+	// TODO: Retrieve schemes from database or cookies depending on if user is logged in
+	if (localStorage.getItem('synesthizeUserData')) {
+
+	}
+	else {
+		if(cookies.schemeList !== undefined)
+			userSchemes = cookies.schemeList
+	}
 		
-	const [schemes, setSchemes] = useState(defaultSchemes.concat(cookieSchemes))
+	const [schemes, setSchemes] = useState(defaultSchemes.concat(userSchemes))
 
 	let toneList = _12tEDO.getToneList();
 	let ind = 0;
@@ -66,12 +72,28 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies}) {
 
 		let confirmDelete = window.confirm('Are you sure you want to delete this scheme?');
 		if (confirmDelete) {
-			let schemeArray = cookies.schemeList;
+			// TODO: Delete scheme from database or cookies depending on if user is logged in
+			let schemeArray = [];
+
+			if (localStorage.getItem('synesthizeUserData')) {
+
+			}
+			else {
+				schemeArray = cookies.schemeList;
+			}
+
 			schemeArray = schemeArray.filter(scheme => scheme !== selectedScheme);
-    		setCookie("schemeList", schemeArray, { path: "/"});
 			setSchemes(defaultSchemes.concat(schemeArray));
 			setMessage('Scheme was successfully deleted');
 			setSelectedScheme(schemes[0]);
+
+			// TODO: Update database or cookies depending on if user is logged in
+			if (localStorage.getItem('synesthizeUserData')) {
+
+			}
+			else {
+				setCookie("schemeList", schemeArray, { path: "/"});
+			}
 		}
 	}
 
