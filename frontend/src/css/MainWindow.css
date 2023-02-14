@@ -87,6 +87,15 @@
     margin-left: 1vh;
 }
 
+#scheme-share-input {
+    width: 45%;
+    padding-left: 5px;
+}
+
+#scheme-share-button {
+    margin-left: 0px;
+}
+
 /* Level-1 Intervals (Note Relationships) */
 .interval-options {
     width: 33%;
