@@ -1,209 +1,179 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 // Get database models
 const User = require("../models/User.js");
 const ColorScheme = require("../models/ColorScheme.js");
 
-// Login API
-router.post("/users/login", async (req, res) => {
-    try {
-        const {username, password} = req.body;
-        const user = await User.findOne({username});
+// Route API endpoints
+router.post("/login", handle(login));
+router.post("/register", handle(register));
+router.post("/getAllSchemes", handle(getAllSchemes));
+router.post("/getValidSchemes", handle(getValidSchemes));
+router.post("/getInvalidSchemes", handle(getInvalidSchemes));
+router.post("/addScheme", handle(addScheme));
+router.post("/shareScheme", handle(shareScheme));
+router.post("/validateScheme", handle(validateScheme));
+router.post("/editScheme", handle(editScheme));
+router.post("/deleteScheme", handle(deleteScheme));
 
-        if (!user || password !== user.password) {
-            throw new Error(`Username or password is incorrect`);
-        }
+module.exports = router;
 
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(400).json({message: error.message});
+// Handle HTTP status codes and messages
+function handle(apiFunction) {
+    return async function (req, res) {
+        const SUCCESS = 200;
+        const ERROR = 400;
+        return apiFunction(req.body)
+            .then((object) => res.status(SUCCESS).json(object))
+            .catch((error) => res.status(ERROR).json({message: error.message}));
     }
-});
+}
 
-// Register API
-router.post("/users/register", async (req, res) => {
-    try {
-        const {username, password} = req.body;
+// Login an existing user
+async function login({username, password}) {
+    const user = await User.findOne({username});
 
-        if (await User.findOne({username})) {
-            throw new Error(`Username '${username}' is already taken`);
-        }
-        
-        const newUserData = new User({username, password});
-        const newUser = await newUserData.save();
-
-        res.status(201).json(newUser);
-    } catch (error) {
-        res.status(400).json({message: error.message});
+    if (!user || password !== user.password) {
+        throw new Error("Username or password is incorrect");
     }
-});
 
-// Get All Schemes API
-router.get("/schemes/", async (req, res) => {
-    try {
-        const {userId} = req.body;
-        const allSchemes = await ColorScheme.find(userId ? {userId} : {});
-        res.status(200).json(allSchemes);
-    } catch (error) {
-        res.status(400).json({message: error.message});
+    return user;
+}
+
+// Register a new user
+async function register({username, password}) {
+    if (await User.findOne({username})) {
+        throw new Error(`Username '${username}' is already taken`);
     }
-});
+    
+    const newUserData = new User({username, password});
+    const newUser = await newUserData.save();
+    return newUser;
+}
+
+// Get all schemes
+async function getAllSchemes({userId} = {}) {
+    let allSchemes;
+
+    if (userId) {
+        allSchemes = await ColorScheme.find({userId});
+    } else {
+        allSchemes = await ColorScheme.find({});
+    }
+    
+    return allSchemes;
+}
 
 // Get all validated Schemes (for showing on main page)
-router.post("/validSchemes/", async(req, res) => {
-    try {
-        const {userId} = req.body;
-        const validSchemes = await ColorScheme.find({userId: userId, validated: true});
-        res.status(200).json(validSchemes);
-    }
-    catch (error) {
-        res.status(400).json({message: error.message});
-    }
-});
+async function getValidSchemes({userId}) {
+    const validSchemes = await ColorScheme.find({userId, validated: true});
+    return validSchemes;
+}
 
 // Get all unvalidated Schemes (for allowing User to validate/delete them)
-router.post("/invalidSchemes/", async(req, res) => {
-    try {
-        const {userId} = req.body;
-        const invalidSchemes = await ColorScheme.find({userId: userId, validated: false});
-        res.status(200).json(invalidSchemes);
+async function getInvalidSchemes({userId}) {
+    const invalidSchemes = await ColorScheme.find({userId, validated: false});
+    return invalidSchemes;
+}
+
+// Add a scheme
+async function addScheme({userId, name, notes}) {
+    if (!(await User.findById(userId))) {
+        throw new Error("User not found");
     }
-    catch (error) {
-        res.status(400).json({message: error.message});
+
+    if (await ColorScheme.findOne({userId, name})) {
+        throw new Error("A color-scheme with that name already exists");
     }
-});
 
-// Add Scheme API
-router.post("/schemes/", async (req, res) => {
-    try {
-        const {userId, name, notes} = req.body;
+    const newSchemeData = new ColorScheme({userId, name, notes});
+    const newScheme = await newSchemeData.save();
+    return newScheme;
+}
 
-        if (!(await User.findById(userId))) {
-            throw new Error("User not found");
-        }
+// Share a scheme
+async function shareScheme({username, name, notes}) {
+    // Find the user to send the color-scheme to
+    const user = await User.findOne({username});
+    if (!user) {
+        throw new Error("User not found");
+    }
 
-        if (await ColorScheme.findOne({userId, name})) {
+    // Get their _id
+    const userId = user._id;
+
+    // Make sure that User doesn't have a color-scheme by that name
+    if (await ColorScheme.findOne({userId, name})) {
+        throw new Error("That user already has a color scheme with that name");
+    }
+
+    // Create this color-scheme but set it as unvalidated
+    const newSchemeData = new ColorScheme({userId, name, notes});
+    newSchemeData.validated = false;
+    const newScheme = await newSchemeData.save();
+    return newScheme;
+}
+
+// Validate a scheme
+async function validateScheme({userId, name}) {
+    if (!(await User.findById(userId))) {
+        throw new Error("User not found");
+    }
+
+    const scheme = await ColorScheme.findOne({userId, name});
+    
+    if (!scheme) {
+        throw new Error("Color-scheme not found");
+    }
+
+    scheme.validated = true;
+    const updatedScheme = await scheme.save();
+    return updatedScheme;
+}
+
+// Edit a scheme
+async function editScheme({userId, name, newName, notes}) {
+    if (!(await User.findById(userId))) {
+        throw new Error("User not found");
+    }
+
+    const scheme = await ColorScheme.findOne({userId, name})
+
+    if (!scheme) {
+        throw new Error("Color-scheme not found");
+    }
+
+    if (newName && newName !== name) {
+        if (await ColorScheme.findOne({userId, name: newName})) {
             throw new Error("A color-scheme with that name already exists");
         }
 
-        const newSchemeData = new ColorScheme({userId, name, notes});
-        const newScheme = await newSchemeData.save();
-
-        res.status(201).json(newScheme);
-    } catch (error) {
-        res.status(400).json({message: error.message});
+        scheme.name = newName;
     }
-});
 
-// Share Scheme API
-router.post("/shareScheme/", async(req, res) => {
-    try {
-        const {username, name, notes} = req.body;
-
-        // Find the user to send the color-scheme to
-        const user = await User.findOne({username});
-        if (!user) {
-            throw new Error("User not found");
-        }
-
-        // Get their _id
-        const userId = user._id;
-
-        // Make sure that User doesn't have a color-scheme by that name
-        if (await ColorScheme.findOne({userId, name})) {
-            throw new Error("That user already has a color scheme with that name");
-        }
-
-        // Create this color-scheme but set it as unvalidated
-        const newSchemeData = new ColorScheme({userId, name, notes});
-        newSchemeData.validated = false;
-        const newScheme = await newSchemeData.save();
-
-        res.status(201).json(newScheme);
+    if (notes) {
+        scheme.notes = notes;
     }
-    catch (error) {
-        res.status(400).json({message: error.message});
+
+    const updatedScheme = await scheme.save();
+    return updatedScheme;
+}
+
+// Delete a scheme
+async function deleteScheme(req) {
+    const {userId, name} = req.body;
+
+    if (!(await User.findById(userId))) {
+        throw new Error("User not found");
     }
-});
 
-// Validate Scheme API
-router.put("/validateScheme/", async(req, res) => {
-    try {
-        const {userId, name} = req.body;
-        if (!(await User.findById(userId))) {
-            throw new Error("User not found");
-        }
+    const scheme = await ColorScheme.findOne({userId, name})
 
-        const scheme = await ColorScheme.findOne({userId, name});
-        
-        if (!scheme) {
-            throw new Error("Color-scheme not found");
-        }
-
-        scheme.validated = true;
-        const updatedScheme = await scheme.save();
-        res.status(200).json(updatedScheme);
+    if (!scheme) {
+        throw new Error("Color-scheme not found");
     }
-    catch(error) {
-        res.status(400).json({message: error.message});
-    }
-});
 
-// Edit Scheme API
-router.put("/schemes/", async (req, res) => {
-    try {
-        const {userId, name, newName, notes} = req.body;
-
-        if (!(await User.findById(userId))) {
-            throw new Error("User not found");
-        }
-
-        const scheme = await ColorScheme.findOne({userId, name})
-
-        if (!scheme) {
-            throw new Error("Color-scheme not found");
-        }
-
-        if (newName) {
-            if (name != newName && await ColorScheme.findOne({userId, name: newName})) {
-                throw new Error("A color-scheme with that name already exists");
-            }
-
-            scheme.name = newName;
-        }
-
-        if (notes) {
-            scheme.notes = notes;
-        }
-
-        const updatedScheme = await scheme.save();
-        res.status(200).json(updatedScheme);
-    } catch (error) {
-        res.status(400).json({message: error.message});
-    }
-});
-
-// Delete Scheme API
-router.delete("/schemes/", async (req, res) => {
-    try {
-        const {userId, name} = req.body;
-
-        if (!(await User.findById(userId))) {
-            throw new Error("User not found");
-        }
-
-        const scheme = await ColorScheme.findOne({userId, name})
-
-        if (!scheme) {
-            throw new Error("Color-scheme not found");
-        }
-
-        const deletedScheme = scheme.remove();
-        res.status(200).json(deletedScheme);
-    } catch (error) {
-        res.status(400).json({message: error.message});
-    }
-});
-
-module.exports = router;
+    const deletedScheme = await scheme.remove();
+    return deletedScheme;
+}

@@ -16,7 +16,7 @@ app.use(express.json());
 mongoose.connect(mongodb_uri);
 
 // Get API routes
-const routes = require('./routes/routes.js');
+const routes = require("./routes/routes.js");
 app.use("", routes);
 
 app.listen(port, () => {
