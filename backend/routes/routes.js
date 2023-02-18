@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const sha256 = require("js-sha256");
 
 // Get database models
 const User = require("../models/User.js");
@@ -34,7 +35,7 @@ function handle(apiFunction) {
 async function login({username, password}) {
     const user = await User.findOne({username});
 
-    if (!user || password !== user.password) {
+    if (!user || sha256(password) !== user.password) {
         throw new Error("Username or password is incorrect");
     }
 
@@ -47,7 +48,7 @@ async function register({username, password}) {
         throw new Error(`Username '${username}' is already taken`);
     }
     
-    const newUserData = new User({username, password});
+    const newUserData = new User({username, password: sha256(password)});
     const newUser = await newUserData.save();
     return newUser;
 }
@@ -144,7 +145,7 @@ async function editScheme({userId, name, newName, notes}) {
         throw new Error("Color-scheme not found");
     }
 
-    if (newName && newName !== name) {
+    if (newName && (newName !== name)) {
         if (await ColorScheme.findOne({userId, name: newName})) {
             throw new Error("A color-scheme with that name already exists");
         }
@@ -161,9 +162,7 @@ async function editScheme({userId, name, newName, notes}) {
 }
 
 // Delete a scheme
-async function deleteScheme(req) {
-    const {userId, name} = req.body;
-
+async function deleteScheme({userId, name}) {
     if (!(await User.findById(userId))) {
         throw new Error("User not found");
     }
