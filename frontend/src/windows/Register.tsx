@@ -4,13 +4,12 @@ import Navbar from '../components/navbar';
 import '../css/LoginRegister.css';
 
 export default function Register() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(email);
+        console.log(username);
     }
 
     return (
@@ -18,12 +17,8 @@ export default function Register() {
             <Navbar/>
         <div className='form-container' id='login-register-background'>
             <form className='register-form' onSubmit={handleSubmit}>
-                <label htmlFor="firstName">First Name</label>
-                <input type="firstName" placeholder="enter your first name"></input>
-                <label htmlFor="lastName">Last Name</label>
-                <input type="lastName" placeholder="enter your last name"></input>
-                <label htmlFor="email">Email</label>
-                <input type="email" placeholder="emailname@gmail.com" id="email" name="email"></input>
+                <label htmlFor="username">Username</label>
+                <input type="username" placeholder="John Smith" id="username" name="username"></input>
                 <label htmlFor="password">Password</label>
                 <input type="password" placeholder="enter your password" id="password" name="password"></input>
                 <button type="button">Register</button>
