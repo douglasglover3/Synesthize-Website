@@ -33,10 +33,10 @@ export default function AddSchema({setCookie, cookies}) {
     let schemes = [];
     if (localStorage.getItem('synesthizeUserData')) {
 
-    } 
-    else {
-      if(cookies.schemeList === undefined)
-        setCookie("schemeList", [], { path: "/"});
+    } else {
+      if(cookies.schemeList === undefined) {
+        setCookie('schemeList', [], { path: '/'});
+      }
       schemes = cookies.schemeList;
     }
 
@@ -47,41 +47,27 @@ export default function AddSchema({setCookie, cookies}) {
     }
 
     // Error-handling to prevent duplicate names
-    for (let i = 0; i < schemes.length; i++) {
-      if (schemes[i].name === name) {
-        setError('Sorry! A color-scheme with that name already exists');
-        return;
-      }
+    if (schemes.some((scheme) => (scheme.name === name))) {
+      setError('Sorry! A color-scheme with that name already exists');
+      return;
     }
 
     setError('');
 
-    // Add hex code colors to <noteArray>
-    let noteArray: string[] = [];
-    noteArray.push(C);
-    noteArray.push(Db);
-    noteArray.push(D);
-    noteArray.push(Eb);
-    noteArray.push(E);
-    noteArray.push(F);
-    noteArray.push(Gb);
-    noteArray.push(G);
-    noteArray.push(Ab);
-    noteArray.push(A);
-    noteArray.push(Bb);
-    noteArray.push(B);
+    // Add hex code colors to notes array
+    const notes: string[] = [C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B];
 
     // Create new scheme object
-    let schemeObj = {name: name, notes: noteArray};
+    const newScheme = {name, notes};
 
     // TODO: Save to database or cookies depending on if user is logged in
     if (localStorage.getItem('synesthizeUserData')) {
 
+    } else {
+      schemes.push(newScheme);
+      setCookie('schemeList', schemes, {path: '/'});
     }
-    else {
-      schemes.push(schemeObj);
-      setCookie("schemeList", schemes, { path: "/"});
-    }
+
     window.location.href = '/';
   }
 
@@ -89,19 +75,21 @@ export default function AddSchema({setCookie, cookies}) {
     <div className='background'>
       <Navbar/>
       <span className='title'>Add Scheme</span>
-      <span className='subtitle'>Create your color profile</span> <br /> <br />
+      <span className='subtitle'>Create your color profile</span>
+      <br />
+      <br />
 
-    <label className='input-label'>Scheme Name</label>
-    <input type="text" className='input-field'
-      required autoFocus
-      value = {name} onChange = {(e) => setName(e.target.value.trim())} />
-    <span>{error}</span> <br />
+      <label className='input-label'>Scheme Name</label>
+      <input type='text' className='input-field'
+        required autoFocus
+        value={name} onChange={(e) => setName(e.target.value.trim())} />
+      <span>{error}</span>
+      <br />
 
-    <label className='input-label'>Volume Slider</label>
-    <div className='input-field'>
-      <input type="range" id='volume-slider'
-        value={volume} onChange={handleVolume} />
-    </div>
+      <label className='input-label'>Volume Slider</label>
+      <div className='input-field'>
+        <input type='range' id='volume-slider' value={volume} onChange={handleVolume} />
+      </div>
 
       <div className='note-grid'>
         <ColorSelector noteName='C' noteColor={C} setNote={setC} />
@@ -119,7 +107,7 @@ export default function AddSchema({setCookie, cookies}) {
       </div>
 
       <button type='button' className='button' onClick={handleSubmit}>Add Scheme</button>
-      <button type="button" className='button' onClick={() => {window.location.href='/'}}>Cancel</button>
+      <button type='button' className='button' onClick={() => {window.location.href='/'}}>Cancel</button>
     </div>
   );
 }
