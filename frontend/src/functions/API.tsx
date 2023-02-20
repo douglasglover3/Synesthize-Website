@@ -1,7 +1,7 @@
 import { sha256 } from "js-sha256";
 
 export async function login({username, password}) {
-    const {_id: userId} = await post("http://localhost:3001/login", {
+    const {_id: userId} = await post("/login", {
         username,
         password: sha256(password)
     });
@@ -15,7 +15,7 @@ export async function login({username, password}) {
 }
 
 export async function register({username, password}) {
-    const {_id: userId} = await post("http://localhost:3001/register", {
+    const {_id: userId} = await post("/register", {
         username,
         password: sha256(password)
     });
@@ -28,8 +28,9 @@ export async function register({username, password}) {
     return {userId};
 }
 
-async function post(url: string, body: object) {
-    const response = await fetch(url, {
+// Send POST request and return body
+async function post(path: string, body: object) {
+    const response = await fetch("http://localhost:3001" + path, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
