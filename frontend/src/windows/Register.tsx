@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Navbar from "../components/navbar";
 import * as API from "../functions/API";
 
@@ -7,13 +7,14 @@ import "../css/LoginRegister.css";
 export default function Register() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         await API.register({username, password})
             .then(() => window.location.href="/")
-            .catch((error) => console.log(error.message));
-    }
+            .catch((apiError) => setError(apiError.message));
+    };
 
     return (
         <div>
@@ -26,6 +27,7 @@ export default function Register() {
                     <input type="password" placeholder="enter a password" id="password" name="password" onChange={(e) => setPassword(e.target.value)}></input>
                     <button type="submit">Register</button>
                 </form>
+                <span>{error}</span>
                 <br />
                 <button className="linkToNextPage" onClick={() => window.location.href="/login"}>Already have an account? Login here</button>
             </div>

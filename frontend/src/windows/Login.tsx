@@ -7,12 +7,13 @@ import "../css/LoginRegister.css";
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         await API.login({username, password})
             .then(() => window.location.href="/")
-            .catch((error) => console.log(error.message));
+            .catch((apiError) => setError(apiError.message));
     };
 
     return (
@@ -26,6 +27,7 @@ export default function Login() {
                     <input type="password" placeholder="enter your password" id="password" name="password" onChange={(e) => setPassword(e.target.value)}></input>
                     <button type="submit">Login</button>
                 </form>
+                <span>{error}</span>
                 <br />
                 <button className="linkToNextPage" onClick={() => window.location.href="/register"}>Register new account</button>
             </div>
