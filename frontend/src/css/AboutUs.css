@@ -1,0 +1,69 @@
+#aboutus-background {
+    display: flex;
+    background: url(/src/images/v970-33c.jpg) no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 85vh;
+    border-radius: 25px;
+}
+
+.aboutus-container button {
+    border: none;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .bloc-tabs {
+    display: flex;
+    position: absolute;
+    right: 100px;
+    top: 100px;
+    left: 600px;
+    width: 700px;
+  }
+  
+  .tabs {
+    padding: 15px;
+    text-align: center;
+    width: 50%;
+    background: rgba(128, 128, 128, 0.075);
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.274);
+    box-sizing: border-box;
+    position: relative;
+  }
+  
+  .active-tabs {
+    background: white;
+    border-bottom: 1px solid transparent;
+  }
+  
+  .content-tabs {
+    flex-grow : 1;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 200px;
+    top: 50px;
+    left: 600px;
+    width: 700px;
+    background: #e5dbdb;
+    margin: 100px auto 0;
+    border: 1px solid rgba(0, 0, 0, 0.274);
+    border-radius: 10px;
+  }
+  
+  .content {
+    background: #e5dbdb;
+    padding: 20px;
+    height: 100%;
+    display: none;
+    border-radius: 10px;
+  }
+  
+  .active-content {
+    display: block;
+  }

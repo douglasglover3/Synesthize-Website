@@ -5,6 +5,7 @@ import AddSchema from "./windows/AddSchema";
 import EditSchema from "./windows/EditSchema";
 import Login from './windows/Login';
 import Register from './windows/Register';
+import {AboutUs} from "./windows/AboutUs";
 
 import { useCookies } from 'react-cookie';
 
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/editSchema" element={<EditSchema setCookie={setCookie} cookies={cookies}/>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/about" element={<AboutUs />}/>
         </Routes>
       </Router>
     </div>
