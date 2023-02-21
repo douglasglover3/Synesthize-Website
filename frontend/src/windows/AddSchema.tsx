@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { setVol } from '../Classes/AudioFunctions';
 import ColorSelector from '../components/ColorSelector';
 import Navbar from '../components/navbar';
+import defaultSchemes from '../schemes/defaultSchemes'; 
+import * as API from "../functions/API";
 
 import '../css/AddEditScheme.css';
 
@@ -28,12 +30,14 @@ export default function AddSchema({setCookie, cookies}) {
     setVol(volumeVal);      // In AudioFunctions.tsx
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // TODO: Get schemes from database or cookies depending on if user is logged in
-    let schemes = [];
+    let schemes;
     if (localStorage.getItem('synesthizeUserData')) {
-
-    } else {
+      // Handle scheme-name checking when hitting API endpoint
+      schemes = [];
+    } 
+    else {
       if(cookies.schemeList === undefined) {
         setCookie('schemeList', [], { path: '/'});
       }
@@ -47,7 +51,8 @@ export default function AddSchema({setCookie, cookies}) {
     }
 
     // Error-handling to prevent duplicate names
-    if (schemes.some((scheme) => (scheme.name === name))) {
+    const allSchemes = defaultSchemes.concat(schemes);
+    if (allSchemes.some((scheme) => (scheme.name === name))) {
       setError('Sorry! A color-scheme with that name already exists');
       return;
     }
@@ -60,15 +65,22 @@ export default function AddSchema({setCookie, cookies}) {
     // Create new scheme object
     const newScheme = {name, notes};
 
-    // TODO: Save to database or cookies depending on if user is logged in
+    // Save to database or cookies depending on if user is logged in
     if (localStorage.getItem('synesthizeUserData')) {
+      const userId = JSON.parse(localStorage.getItem('synesthizeUserData')).userId;
 
+      try {
+        await API.addScheme({userId, name, notes});
+        window.location.href = '/';
+      }
+      catch(apiError) {
+        setError(apiError.message);
+      }
     } else {
       schemes.push(newScheme);
       setCookie('schemeList', schemes, {path: '/'});
+      window.location.href = '/';
     }
-
-    window.location.href = '/';
   }
 
   return (

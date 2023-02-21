@@ -87,7 +87,7 @@ async function addScheme({userId, name, notes}) {
 
     const colorSchemeNameTaken = await ColorScheme.findOne({userId, name});
     if (colorSchemeNameTaken) {
-        throw new Error("A color-scheme with that name already exists");
+        throw new Error("Sorry! A color-scheme with that name already exists");
     }
 
     const newSchemeData = new ColorScheme({userId, name, notes});
@@ -109,7 +109,7 @@ async function shareScheme({username, name, notes}) {
     // Make sure that User doesn't have a color-scheme by that name
     const colorSchemeNameTaken = await ColorScheme.findOne({userId, name});
     if (colorSchemeNameTaken) {
-        throw new Error("That user already has a color scheme with that name");
+        throw new Error("User already has that color-scheme");
     }
 
     // Create this color-scheme but set it as unvalidated
@@ -151,7 +151,7 @@ async function editScheme({userId, name, newName, notes}) {
     if (nameChangeRequested) {
         const newNameTaken = await ColorScheme.findOne({userId, name: newName})
         if (newNameTaken) {
-            throw new Error("A color-scheme with that name already exists");
+            throw new Error("Sorry! A color-scheme with that name already exists");
         }
 
         scheme.name = newName;

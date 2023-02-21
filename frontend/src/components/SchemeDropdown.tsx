@@ -4,6 +4,7 @@ import { EDOSystem } from '../Classes/EDOSystem';
 import { isDefaultScheme } from '../Classes/SchemeFunctions';
 import defaultSchemes from '../schemes/defaultSchemes'; 
 import SchemeShareSidebar from './SchemeShareSidebar';
+import * as API from "../functions/API";
 
 type Scheme = {
 	name: string,
@@ -12,18 +13,30 @@ type Scheme = {
 
 export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) {
 	let _12tEDO = new EDOSystem(12);
-	let userSchemes = [];
 
-	// TODO: Retrieve schemes from database or cookies depending on if user is logged in
-	if (localStorage.getItem('synesthizeUserData')) {
+	// Get <userSchemes> at first render either from database or cookies
+	const [userSchemes, setUserSchemes] = useState([]);
+	useEffect(() => {
+		// User logged in, retrieve from database
+		if (localStorage.getItem('synesthizeUserData')) {
+			const userId = JSON.parse(localStorage.getItem('synesthizeUserData')).userId;
+			API.getValidSchemes({userId})
+				.then((ret) => setUserSchemes(ret.validSchemes));
+		}
+		// User not logged in, retrieve from cookies
+		else {
+			if(cookies.schemeList !== undefined)
+				setUserSchemes(cookies.schemeList);
+		}
 
-	}
-	else {
-		if(cookies.schemeList !== undefined)
-			userSchemes = cookies.schemeList
-	}
-		
-	const [schemes, setSchemes] = useState(defaultSchemes.concat(userSchemes))
+		console.log('here');
+	}, [cookies.schemeList]);
+
+	// Whenever <userSchemes> is updated, update the full <schemes> list
+	const [schemes, setSchemes] = useState(defaultSchemes.concat(userSchemes));
+	useEffect(() => {
+		setSchemes(defaultSchemes.concat(userSchemes));
+	}, [userSchemes]);
 
 	let toneList = _12tEDO.getToneList();
 	let ind = 0;
@@ -70,24 +83,17 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 
 		let confirmDelete = window.confirm('Are you sure you want to delete this scheme?');
 		if (confirmDelete) {
-			// TODO: Delete scheme from database or cookies depending on if user is logged in
-			let schemeArray = [];
-
-			if (localStorage.getItem('synesthizeUserData')) {
-
-			}
-			else {
-				schemeArray = cookies.schemeList;
-			}
-
-			schemeArray = schemeArray.filter(scheme => scheme !== selectedScheme);
-			setSchemes(defaultSchemes.concat(schemeArray));
+			// Delete scheme from database or cookies depending on if user is logged in
+			let schemeArray = userSchemes.filter(scheme => scheme !== selectedScheme);
+			setUserSchemes(schemeArray);
 			setMessage('Scheme was successfully deleted');
 			setSelectedScheme(schemes[0]);
 
-			// TODO: Update database or cookies depending on if user is logged in
+			// Update database or cookies depending on if user is logged in
 			if (localStorage.getItem('synesthizeUserData')) {
-
+				const userId = JSON.parse(localStorage.getItem('synesthizeUserData')).userId;
+				const name = selectedScheme.name;
+				API.deleteScheme({userId, name});
 			}
 			else {
 				setCookie("schemeList", schemeArray, { path: "/"});
@@ -105,8 +111,8 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 		navigate('/EditSchema', {state:{scheme: selectedScheme}});
 	}
 
-	// TODO: Send this scheme to user with <username>
-	const shareScheme = (): void => {
+	// Send this scheme to user with <username>
+	const shareScheme = async () => {
 		// Don't let user share default schemes
 		if (isDefaultScheme(selectedScheme.name)) {
 			setShareMessage('Sorry! Can\'t share default schemes');
@@ -119,7 +125,16 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 			return;
 		}
 
-		setShareMessage('Scheme successfully shared');
+		try {
+			const name = selectedScheme.name;
+			const notes = selectedScheme.notes;
+			await API.shareScheme({username, name, notes});
+			setUsername('');
+			setShareMessage('Scheme successfully shared');
+		}
+		catch(apiError) {
+			setShareMessage(apiError.message);
+		}
 	}
 
     return(
