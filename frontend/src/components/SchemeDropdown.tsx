@@ -28,8 +28,6 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 			if(cookies.schemeList !== undefined)
 				setUserSchemes(cookies.schemeList);
 		}
-
-		console.log('here');
 	}, [cookies.schemeList]);
 
 	// Whenever <userSchemes> is updated, update the full <schemes> list
@@ -137,6 +135,10 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 		}
 	}
 
+	const addToParentSchemeList = (newScheme) => {
+		setUserSchemes((oldSchemelist) => [...oldSchemelist, newScheme]);
+	}
+
     return(
         <div>
 			<div className='subsection'>
@@ -171,8 +173,13 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 			<div>
 				<span className='scheme-message'>{shareMessage}</span>
 			</div> <br /> <br />
-			<button type='button' id='scheme-share-button' className='button' onClick={ openSidebar }>Received Schemes</button>
-				<SchemeShareSidebar sidebarOpen={sidebarOpen} setSidebarOpenInParent={setSidebarOpen} />
+			<div style={{display: localStorage.getItem('synesthizeUserData') ? '' : 'none'}}>
+				<button type='button' id='scheme-share-button' className='button' onClick={ openSidebar }>
+					Received Schemes
+				</button>
+				<SchemeShareSidebar sidebarOpen={sidebarOpen} setSidebarOpenInParent={setSidebarOpen} 
+					addToParentSchemeList={addToParentSchemeList} />
+			</div>
         </div>
     );
 }

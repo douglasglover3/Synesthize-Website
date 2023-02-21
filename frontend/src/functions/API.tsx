@@ -41,7 +41,14 @@ export async function getInvalidSchemes({userId}) {
         userId: userId
     });
 
-    return invalidSchemes;
+    return {invalidSchemes};
+}
+
+export async function validateScheme({userId, name}) {
+    await post("/validateScheme", {
+        userId: userId,
+        name: name
+    });
 }
 
 export async function addScheme({userId, name, notes}) {
