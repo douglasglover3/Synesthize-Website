@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import SchemePreview from './SchemePreview';
 import * as API from "../functions/API";
 
 import '../css/AddEditScheme.css';
@@ -65,19 +66,22 @@ export default function SchemeShareSidebar({ sidebarOpen, setSidebarOpenInParent
             <label id='close-button' onClick={closeSidebar}>&times;</label>
             <div className='received-schemes'>
                 <span id='accept-decline-schemes' className='subtitle'>Accept/Decline Schemes</span> <br /> <br />
-                <div className='received-scheme-list'>
-                    <ul>
-                    {
-                        receivedSchemes.map((scheme: Scheme) => 
-                            <li key={scheme.name} value={ind++}>
+                <ul className='received-scheme-list'>
+                {
+                    receivedSchemes.map((scheme: Scheme) =>
+                        <div key={scheme.name} id='single-received-scheme'>
+                            <li value={ind++} id='scheme-name'>
                                 {scheme.name}
-                                <button value={scheme.name} onClick={acceptScheme}>Accept</button>
-                                <button value={scheme.name} onClick={declineScheme}>Decline</button>
+                                {/* X mark (Decline) */}
+                                <button value={scheme.name} onClick={declineScheme}>&#10060;</button>
+                                {/* Check mark (Accept) */}
+                                <button value={scheme.name} onClick={acceptScheme}>&#9989;</button>
                             </li>
-                        )
-                    }
-                    </ul>
-                </div>
+                            <SchemePreview scheme={scheme} />
+                        </div>
+                    )
+                }
+                </ul>
             </div>
         </div>
     );

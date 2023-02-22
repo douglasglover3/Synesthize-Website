@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { EDOSystem } from '../Classes/EDOSystem';
 import { isDefaultScheme } from '../Classes/SchemeFunctions';
-import defaultSchemes from '../schemes/defaultSchemes'; 
+import defaultSchemes from '../schemes/defaultSchemes';
+import SchemePreview from './SchemePreview'; 
 import SchemeShareSidebar from './SchemeShareSidebar';
 import * as API from "../functions/API";
 
@@ -12,8 +12,6 @@ type Scheme = {
 }
 
 export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) {
-	let _12tEDO = new EDOSystem(12);
-
 	// Get <userSchemes> at first render either from database or cookies
 	const [userSchemes, setUserSchemes] = useState([]);
 	useEffect(() => {
@@ -35,8 +33,6 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 	useEffect(() => {
 		setSchemes(defaultSchemes.concat(userSchemes));
 	}, [userSchemes]);
-
-	let toneList = _12tEDO.getToneList();
 	let ind = 0;
 
 	const navigate = useNavigate();
@@ -151,15 +147,7 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 				<button type="button" className='button' onClick={ handleEdit }>Edit Scheme</button>
 				<button type="button" className='button' onClick={ handleDelete }>Delete Scheme</button>
 			</div>
-			<div className='subsection'>
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.C]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.D]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.E]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.F]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.G]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.A]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.B]}} />
-			</div>
+			<SchemePreview scheme={selectedScheme} />
 			<div>
 				<span className='scheme-message'>{message}</span>
 			</div> <br />
