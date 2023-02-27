@@ -6,6 +6,11 @@ NavMenuStart,
 NavMenuEnd,
 } from './NavbarElements';
 
+const logout = () => {
+    localStorage.removeItem('synesthizeUserData');
+    window.location.reload();
+}
+
 const Navbar = () => {
 return (
 	<Nav>
@@ -17,11 +22,18 @@ return (
                 About Us
             </NavLink>
 		</NavMenuStart>
-        <NavMenuEnd>
-                <NavLink to='/login'>Login</NavLink>
-                <NavLink to='/register'>Register</NavLink>
-        </NavMenuEnd>
-		
+            {
+                localStorage.getItem('synesthizeUserData')
+                ?
+                <NavMenuEnd>
+                    <NavLink to='/' onClick={logout}>Logout</NavLink>
+                </NavMenuEnd>
+                :         
+                <NavMenuEnd>
+                    <NavLink to='/login'>Login</NavLink>
+                    <NavLink to='/register'>Register</NavLink>
+                </NavMenuEnd>
+            }
 	</Nav>
 );
 };
