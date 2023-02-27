@@ -1,16 +1,3 @@
-/* #login-register-background {
-  display: flex;
-  background-image: url(../images/Xylophone.jpg);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-} */
-
 #login-register-background {
   display: flex;
   background: url(/src/images/v970-33c.jpg) no-repeat center center fixed;
@@ -19,57 +6,56 @@
   height: 85vh;
   border-radius: 25px;
 }
-  
-  .form-container{
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
 
-  .login-form, .register-form{
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: absolute;
-    right: 200px;
-    top: 150px;
-    left: 800px;
-  }
-  
-  /* .form-container {
-    position: absolute;
-    right: 200px;
-    top: 150px;
-    left: 700px;
-  } */
-  
-  .form-container label {
-    text-align: left; 
-  }
-  
-  .form-container input {
-    margin: 0.5rem 0;
-    padding: 1rem;
-    border: none;
-    border-radius: 10px;
-  }
-  
-  .form-container button {
-    border: none;
-    background-color: white;
-    padding: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    position: absolute;
-    right: 200px;
-    top: 330px;
-    left: 800px;
-  }
-  
-  .linkToNextPage {
-    background: none;
-    text-decoration: underline;
-  }
-  
-  
-  
+.form-container{
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.login-form, .register-form{
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: absolute;
+  right: 200px;
+  top: 150px;
+  left: 800px;
+}
+
+.form-container label {
+  text-align: left; 
+}
+
+.form-container input {
+  margin: 0.5rem 0;
+  padding: 1rem;
+  border: none;
+  border-radius: 10px;
+}
+
+.form-container button {
+  border: none;
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  position: absolute;
+  right: 200px;
+  left: 800px;
+}
+
+#login-register-button {
+  top: 330px;
+}
+
+#move-page {
+  top: 400px;
+}
+
+.linkToNextPage {
+  background: none;
+  text-decoration: underline;
+}
+
+

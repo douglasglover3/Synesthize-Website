@@ -9,8 +9,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async () => {
         await API.login({username, password})
             .then(() => window.location.href="/")
             .catch((apiError) => setError(apiError.message));
@@ -25,11 +24,15 @@ export default function Login() {
                     <input type="username" placeholder="enter your username" id="username" name="username" onChange={(e) => setUsername(e.target.value)}></input>
                     <label htmlFor="password">Password</label>
                     <input type="password" placeholder="enter your password" id="password" name="password" onChange={(e) => setPassword(e.target.value)}></input>
-                    <button type="submit">Login</button>
                 </form>
+                <button id='login-register-button' type="button" onClick={handleSubmit}>
+                    Login
+                </button>
                 <span>{error}</span>
                 <br />
-                <button className="linkToNextPage" onClick={() => window.location.href="/register"}>Register new account</button>
+                <button id='move-page' className="linkToNextPage" onClick={() => window.location.href="/register"}>
+                    Register new account
+                </button>
             </div>
         </div>
     )
