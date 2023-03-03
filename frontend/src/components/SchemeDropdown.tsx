@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { EDOSystem } from '../Classes/EDOSystem';
 import { isDefaultScheme } from '../Classes/SchemeFunctions';
-import defaultSchemes from '../schemes/defaultSchemes'; 
+import defaultSchemes from '../schemes/defaultSchemes';
+import SchemePreview from './SchemePreview'; 
 import SchemeShareSidebar from './SchemeShareSidebar';
+import * as API from "../functions/API";
 
 type Scheme = {
 	name: string,
@@ -11,21 +12,27 @@ type Scheme = {
 }
 
 export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) {
-	let _12tEDO = new EDOSystem(12);
-	let userSchemes = [];
+	// Get <userSchemes> at first render either from database or cookies
+	const [userSchemes, setUserSchemes] = useState([]);
+	useEffect(() => {
+		// User logged in, retrieve from database
+		if (localStorage.getItem('synesthizeUserData')) {
+			const userId = JSON.parse(localStorage.getItem('synesthizeUserData')).userId;
+			API.getValidSchemes({userId})
+				.then((ret) => setUserSchemes(ret.validSchemes));
+		}
+		// User not logged in, retrieve from cookies
+		else {
+			if(cookies.schemeList !== undefined)
+				setUserSchemes(cookies.schemeList);
+		}
+	}, [cookies.schemeList]);
 
-	// TODO: Retrieve schemes from database or cookies depending on if user is logged in
-	if (localStorage.getItem('synesthizeUserData')) {
-
-	}
-	else {
-		if(cookies.schemeList !== undefined)
-			userSchemes = cookies.schemeList
-	}
-		
-	const [schemes, setSchemes] = useState(defaultSchemes.concat(userSchemes))
-
-	let toneList = _12tEDO.getToneList();
+	// Whenever <userSchemes> is updated, update the full <schemes> list
+	const [schemes, setSchemes] = useState(defaultSchemes.concat(userSchemes));
+	useEffect(() => {
+		setSchemes(defaultSchemes.concat(userSchemes));
+	}, [userSchemes]);
 	let ind = 0;
 
 	const navigate = useNavigate();
@@ -70,24 +77,17 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 
 		let confirmDelete = window.confirm('Are you sure you want to delete this scheme?');
 		if (confirmDelete) {
-			// TODO: Delete scheme from database or cookies depending on if user is logged in
-			let schemeArray = [];
-
-			if (localStorage.getItem('synesthizeUserData')) {
-
-			}
-			else {
-				schemeArray = cookies.schemeList;
-			}
-
-			schemeArray = schemeArray.filter(scheme => scheme !== selectedScheme);
-			setSchemes(defaultSchemes.concat(schemeArray));
+			// Delete scheme from database or cookies depending on if user is logged in
+			let schemeArray = userSchemes.filter(scheme => scheme !== selectedScheme);
+			setUserSchemes(schemeArray);
 			setMessage('Scheme was successfully deleted');
 			setSelectedScheme(schemes[0]);
 
-			// TODO: Update database or cookies depending on if user is logged in
+			// Update database or cookies depending on if user is logged in
 			if (localStorage.getItem('synesthizeUserData')) {
-
+				const userId = JSON.parse(localStorage.getItem('synesthizeUserData')).userId;
+				const name = selectedScheme.name;
+				API.deleteScheme({userId, name});
 			}
 			else {
 				setCookie("schemeList", schemeArray, { path: "/"});
@@ -105,8 +105,8 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 		navigate('/EditSchema', {state:{scheme: selectedScheme}});
 	}
 
-	// TODO: Send this scheme to user with <username>
-	const shareScheme = (): void => {
+	// Send this scheme to user with <username>
+	const shareScheme = async () => {
 		// Don't let user share default schemes
 		if (isDefaultScheme(selectedScheme.name)) {
 			setShareMessage('Sorry! Can\'t share default schemes');
@@ -119,7 +119,20 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 			return;
 		}
 
-		setShareMessage('Scheme successfully shared');
+		try {
+			const name = selectedScheme.name;
+			const notes = selectedScheme.notes;
+			await API.shareScheme({username, name, notes});
+			setUsername('');
+			setShareMessage('Scheme successfully shared');
+		}
+		catch(apiError) {
+			setShareMessage(apiError.message);
+		}
+	}
+
+	const addToParentSchemeList = (newScheme) => {
+		setUserSchemes((oldSchemelist) => [...oldSchemelist, newScheme]);
 	}
 
     return(
@@ -134,15 +147,7 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 				<button type="button" className='button' onClick={ handleEdit }>Edit Scheme</button>
 				<button type="button" className='button' onClick={ handleDelete }>Delete Scheme</button>
 			</div>
-			<div className='subsection'>
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.C]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.D]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.E]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.F]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.G]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.A]}} />
-				<div className='color-block' style={{backgroundColor:selectedScheme.notes[toneList.B]}} />
-			</div>
+			<SchemePreview scheme={selectedScheme} />
 			<div>
 				<span className='scheme-message'>{message}</span>
 			</div> <br />
@@ -156,8 +161,13 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 			<div>
 				<span className='scheme-message'>{shareMessage}</span>
 			</div> <br /> <br />
-			<button type='button' id='scheme-share-button' className='button' onClick={ openSidebar }>Received Schemes</button>
-				<SchemeShareSidebar sidebarOpen={sidebarOpen} setSidebarOpenInParent={setSidebarOpen} />
+			<div style={{display: localStorage.getItem('synesthizeUserData') ? '' : 'none'}}>
+				<button type='button' id='scheme-share-button' className='button' onClick={ openSidebar }>
+					Received Schemes
+				</button>
+				<SchemeShareSidebar sidebarOpen={sidebarOpen} setSidebarOpenInParent={setSidebarOpen} 
+					addToParentSchemeList={addToParentSchemeList} />
+			</div>
         </div>
     );
 }

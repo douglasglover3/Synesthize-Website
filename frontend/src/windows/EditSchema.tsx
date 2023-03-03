@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { setVol } from '../Classes/AudioFunctions';
 import ColorSelector from '../components/ColorSelector';
 import Navbar from '../components/navbar';
+import defaultSchemes from '../schemes/defaultSchemes'; 
+import * as API from "../functions/API";
 
 import '../css/AddEditScheme.css';
 
@@ -34,11 +36,11 @@ export default function EditSchema({setCookie, cookies}) {
     setVol(volumeVal);      // In AudioFunctions.tsx
   }
 
-  const handleSubmit = () => {
-    // TODO: Get schemes from database or cookies depending on if user is logged in
-    let schemes = [];
+  const handleSubmit = async () => {
+    // Get schemes from database or cookies depending on if user is logged in
+    let schemes;
     if (localStorage.getItem('synesthizeUserData')) {
-
+      schemes = [];
     } 
     else {
       if(cookies.schemeList === undefined)
@@ -53,8 +55,9 @@ export default function EditSchema({setCookie, cookies}) {
     }
 
     // Error-handling to prevent duplicate names, but allow overwriting filename
-    for (let i = 0; i < schemes.length; i++) {
-      if (name === schemes[i].name && originalName !== schemes[i].name) {
+    const allSchemes = defaultSchemes.concat(schemes);
+    for (let i = 0; i < allSchemes.length; i++) {
+      if (name === allSchemes[i].name && originalName !== allSchemes[i].name) {
         setError('Sorry! A color-scheme with that name already exists');
         return;
       }
@@ -80,9 +83,20 @@ export default function EditSchema({setCookie, cookies}) {
     // Create new scheme object
     let schemeObj = {name: name, notes: noteArray};
 
-    // TODO: Save to database or cookies depending on if user is logged in
+    // Save to database or cookies depending on if user is logged in
     if (localStorage.getItem('synesthizeUserData')) {
+      const userId = JSON.parse(localStorage.getItem('synesthizeUserData')).userId;
+      const name = originalName;
+      const newName = name;
+      const notes = noteArray;
 
+      try {
+        await API.editScheme({userId, name, newName, notes});
+        window.location.href ='/';
+      }
+      catch(apiError) {
+        setError(apiError.message);
+      }
     }
     else {
       for (let i = 0; i < schemes.length; i++) {
@@ -92,8 +106,8 @@ export default function EditSchema({setCookie, cookies}) {
         }
       }
       setCookie("schemeList", schemes, { path: "/"});
+      window.location.href ='/';
     }
-	  window.location.href ='/';
   }
 
   return (
