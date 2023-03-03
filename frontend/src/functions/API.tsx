@@ -89,7 +89,8 @@ export async function shareScheme({username, name, notes}) {
 
 // Send POST request and return body
 async function post(path: string, body: object) {
-    const response = await fetch("http://localhost:3001" + path, {
+    const url = process.env.NODE_ENV === 'production' ? 'https://synesthize.com' : 'http://localhost:3001';
+    const response = await fetch(url + path, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
