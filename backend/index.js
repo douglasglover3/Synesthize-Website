@@ -16,7 +16,7 @@ mongoose.connect(mongodb_uri);
 app.use(cors());
 
 // Route api requests
-app.use("", routes);
+app.use("/api", routes);
 
 // Start listening for requests
 app.listen(port, () => {
