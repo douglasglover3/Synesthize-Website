@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import Navbar from "../components/navbar";
 import * as API from "../functions/API";
 
@@ -9,9 +10,11 @@ export default function Register() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    const navigate = useNavigate();
+
     const handleSubmit = async () => {
         await API.register({username, password})
-            .then(() => window.location.href="/")
+            .then(() => navigate('/'))
             .catch((apiError) => setError(apiError.message));
     };
 
@@ -30,7 +33,7 @@ export default function Register() {
                 </button>
                 <span>{error}</span>
                 <br />
-                <button id='move-page' className="linkToNextPage" onClick={() => window.location.href="/login"}>
+                <button id='move-page' className="linkToNextPage" onClick={() => navigate('/login')}>
                     Already have an account? Login here
                 </button>
             </div>
