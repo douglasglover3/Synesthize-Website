@@ -95,12 +95,12 @@ export class ColorCanvas extends React.Component{
     super(props)
 
     this.style =
-      {dislpay:'block',
+      {display:'block',
       left: "0px" ,
       bottom: "0px" ,
       background : "#000000",
       width: '100%',
-      height: '100%',
+      height: '90vh',
       WebkitFilter: "blur(3px)"}
 
     this.alpha = 0;
@@ -143,7 +143,8 @@ export class ColorCanvas extends React.Component{
     if (this.ctx != null) {
       let backgroundHeight = document.getElementById('background').clientHeight
       this.c.width = window.innerWidth
-      this.c.height = window.innerHeight - backgroundHeight;
+      // this.c.height = window.innerHeight - backgroundHeight;
+      this.c.height = 90 * (window.innerHeight / 100);  // Sets the height to 75vh
       
       this.clear()
       this.ctx.fillStyle = this.dis_color;
