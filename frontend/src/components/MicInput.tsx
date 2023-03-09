@@ -10,23 +10,26 @@ export default function MicInput(props){
     useEffect(() => {
         devicesList.current = []
 		//get microphone devices
-        navigator.mediaDevices.enumerateDevices()
-            .then((devices) => {
-            devices.forEach((device) => {
-                if(device.kind === "audioinput")
-                {
-                    let present = false;
-                    devicesList.current.forEach((listedDevice) => {
-                        if(device.groupId === listedDevice.groupId)
-                            present = true;
+        navigator.mediaDevices.getUserMedia ({audio: { deviceId: chosenId}})
+            .then(() => {
+                navigator.mediaDevices.enumerateDevices()
+                    .then((devices) => {
+                    devices.forEach((device) => {
+                        if(device.kind === "audioinput")
+                        {
+                            let present = false;
+                            devicesList.current.forEach((listedDevice) => {
+                                if(device.groupId === listedDevice.groupId)
+                                    present = true;
+                            })
+                            if(!present)
+                                devicesList.current.push(device);
+                        }
+                    });
                     })
-                    if(!present)
-                        devicesList.current.push(device);
-                }
-            });
-            })
-        console.log(devicesList)
-	}, [chosenId]);
+                })
+                console.log(devicesList)
+        }, [chosenId]);
     
     
 
