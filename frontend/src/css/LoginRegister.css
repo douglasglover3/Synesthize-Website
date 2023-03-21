@@ -46,6 +46,8 @@
 }
 
 #login-register-button {
+  margin: 0.5rem 0;
+  padding: 1rem;
   top: 330px;
 }
 

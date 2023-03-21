@@ -23,7 +23,7 @@ export const AboutUs = (props) => {
                 </button>
                 <button className={toggleTab === 3 ? "tabs active-tab": "tabs"}
                 onClick = {() => toggleTab(3)}>
-                    Name 3
+                    Synesthize Origin
                 </button>
             </div>
 
@@ -61,7 +61,18 @@ export const AboutUs = (props) => {
                     </p>
                 </div>
                 <div className={toggleState === 3 ? "content active-content" : "content"}>
-                    <h2>Content 3</h2>
+                    <p>
+                        The project is originally an idea belongs to Dr.Leinecker who is also the sponsor of Synesthize. It's all started when Dr.Leinecker went to a musical performance 
+                        that alternate between color (LED light system) and a blute's sound which gave him the idea of displaying color representing notes that are being played. And from 
+                        there, Synesthize came to mind.
+                        <br/>
+                        <br/>
+                        A little bit about the flute that gave Dr.Leinecker the idea for Synesthize:
+                        <br/>
+                        In the paper named "Fantasia" talking about the making behind the flutes written by Juan Novo, the flute instrument "has keys made of 24-karat gold-plated German 
+                        nickel silver. It can be illuminated through a fiber optics arrangement allowing different colors to flick on when different notes are played. The flute is made 
+                        from a hollowed-out, single length of clear acrylic, polished inside and out, then fitted with keys."  
+                    </p>
                 </div>
             </div>
         </div>
