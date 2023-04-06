@@ -104,12 +104,64 @@
 
 .interval-grid {
     display: flex;
-    flex-flow: row wrap;
-    align-items: flex-start;
+    flex-direction: column;
+    padding: 2%;
+    margin: 0px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 70%;
 }
 
 .interval-grid .interval {
-    padding: 0.3rem;
+    display: flex;
+    flex-direction: row;
+    background: #3f0071;
+    margin: 1%;
+    border: solid;
+    border-color: black;
+    border-width: 4px;
+    align-items: center;
+}
+
+.delete-interval {
+    cursor: pointer;
+    color: red;
+    font-size: 1.7rem;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    margin-bottom: 0.14rem;
+}
+
+.interval-container {
+    width: 60%;
+    max-width: 60%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 5%;
+}
+
+.percentage-slider-container {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 5%;
+}
+
+.percentage-slider {
+    min-width: none;
+    width: 80%;
+}
+
+.interval-color {
+    min-width: 20px;
+    width: 20px;
+    padding: 0px;
+    margin: 2%;
+    border:none;
+    background-color: transparent;
 }
 
 /* Microphone Settings */

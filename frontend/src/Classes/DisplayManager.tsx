@@ -1,5 +1,3 @@
-import React from "react";
-import { textChangeRangeIsUnchanged } from "typescript";
 import { ColorCanvas } from "../Classes/ColorDisplay";
 import { EDOSystem } from "../Classes/EDOSystem";
 
@@ -36,28 +34,35 @@ export class DisplayManager{
 		}
 	}
 
-	display(note:number, octave:number) {
+	display(note:number, octave:number, intervals) {
 		if(this.currNote == -1 && !Number.isNaN(note)){ // set first seen note
 			this.currNote = note;
 			this.prevNote = note
 		}
-		else if(this.counter <= 0) {
-			this.currNote = note
+		else if(this.counter <= 0) { // no color displayed
+			this.currNote = note // start tracking the new note
 		}
 
-		if(note == this.currNote) {
+		if(note == this.currNote) { // note heard is currently tracked note
 			this.counter += 1
 		}
-		else {
+		else { // note heard is not the currently tracked note
 			this.counter -= 1
 		}
 
 
-		if(this.counter >= display_threshold) {
+		if(this.counter >= display_threshold) { // note has reached threshold to be displayed
 			this.counter = display_threshold
-			if(this.canvas.check_inactive()) {
-				let intervalColor = edo.getIntervalColor(this.currNote, this.prevNote)
-				this.canvas.draw_new(this.currentScheme[note], octave, intervalColor)
+			if(this.canvas.check_inactive()) { // check if canvas is empty and not in an animation loop
+				
+
+				// Can access interval information this way
+				// NOTE: Need to do it within the loop so that intervals stay up-to-date
+				console.log(intervals.length);
+				
+				let interval = intervals[Math.abs(this.currNote-this.prevNote)]
+
+				this.canvas.draw_new(this.currentScheme[note], octave, interval.color, interval.percentage) 
 			}
 		}
 		else if(this.counter <= 0) {

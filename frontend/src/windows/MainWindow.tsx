@@ -73,7 +73,7 @@ export default function MainWindow({setCookie, cookies}) {
 		let frequencies = fourier.getFrequencies(outputData, 5)
 		let estimate = edo.frequencyToNote(frequencies[0])
 		//console.log(`Estimated note: Note=${estimate.note} Octave=${estimate.octave}`);
-		display_manager.display(estimate.note, estimate.octave)
+		display_manager.display(estimate.note, estimate.octave, cookies.intervals ?? [])
 	}
 
 	return (
@@ -90,7 +90,7 @@ export default function MainWindow({setCookie, cookies}) {
 					</div>
 					<div className='interval-options'>
 						<label className='subtitle'>Tracked Intervals</label> <br /> <br />
-						<IntervalSelector />
+						<IntervalSelector setCookie={setCookie} cookies={cookies}/>
 					</div>
 					<div className='mic-options'>
 						<label className='subtitle'>Microphone Controls</label> <br /> <br />
