@@ -62,12 +62,12 @@ export const AboutUs = (props) => {
                 </div>
                 <div className={toggleState === 3 ? "content active-content" : "content"}>
                     <p>
-                        The project is originally an idea belongs to Dr.Leinecker who is also the sponsor of Synesthize. It's all started when Dr.Leinecker went to a musical performance 
-                        that alternate between color (LED light system) and a blute's sound which gave him the idea of displaying color representing notes that are being played. And from 
-                        there, Synesthize came to mind.
+                        The original idea for this project came from Dr. Leinecker, the sponsor of Synesthize. It all started when Dr. Leinecker went to a musical performance 
+                        where the different notes played by the flute player would produce different colors of light which gave him the idea of displaying color representing
+                        notes that are being played. From this experience, the idea of Synesthize was born.
                         <br/>
                         <br/>
-                        A little bit about the flute that gave Dr.Leinecker the idea for Synesthize:
+                        A little bit about the flute that gave Dr. Leinecker the idea for Synesthize:
                         <br/>
                         In the paper named "Fantasia" talking about the making behind the flutes written by Juan Novo, the flute instrument "has keys made of 24-karat gold-plated German 
                         nickel silver. It can be illuminated through a fiber optics arrangement allowing different colors to flick on when different notes are played. The flute is made 

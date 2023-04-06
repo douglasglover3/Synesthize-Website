@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { setVol } from '../Classes/AudioFunctions';
 import ColorSelector from '../components/ColorSelector';
 import Navbar from '../components/navbar';
@@ -9,7 +9,9 @@ import * as API from "../functions/API";
 import '../css/AddEditScheme.css';
 
 export default function EditSchema({setCookie, cookies}) {
+  const navigate = useNavigate();
   const location = useLocation();
+  
   let selectedScheme = location.state.scheme;
   let originalName = selectedScheme.name;
 
@@ -92,7 +94,7 @@ export default function EditSchema({setCookie, cookies}) {
 
       try {
         await API.editScheme({userId, name, newName, notes});
-        window.location.href ='/';
+        navigate('/', {state:{scheme: schemeObj}});
       }
       catch(apiError) {
         setError(apiError.message);
@@ -106,7 +108,7 @@ export default function EditSchema({setCookie, cookies}) {
         }
       }
       setCookie("schemeList", schemes, { path: "/"});
-      window.location.href ='/';
+      navigate('/', {state:{scheme: schemeObj}});
     }
   }
 
@@ -144,7 +146,7 @@ export default function EditSchema({setCookie, cookies}) {
       </div>
 
       <button type='button' className='button' onClick={handleSubmit}>Edit Scheme</button>
-      <button type="button" className='button' onClick={() => {window.location.href='/'}}>Cancel</button>
+      <button type="button" className='button' onClick={() => {navigate('/', {state:{scheme: selectedScheme}});}}>Cancel</button>
     </div>
   );
 }

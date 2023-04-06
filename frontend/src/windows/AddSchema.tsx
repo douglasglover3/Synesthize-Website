@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { setVol } from '../Classes/AudioFunctions';
 import ColorSelector from '../components/ColorSelector';
 import Navbar from '../components/navbar';
@@ -8,6 +9,8 @@ import * as API from "../functions/API";
 import '../css/AddEditScheme.css';
 
 export default function AddSchema({setCookie, cookies}) {
+  const navigate = useNavigate();
+
   const [volume, setVolume] = useState(50);
   const [name, setName] = useState('');
   const [error, setError] = useState('');
@@ -31,7 +34,7 @@ export default function AddSchema({setCookie, cookies}) {
   }
 
   const handleSubmit = async () => {
-    // TODO: Get schemes from database or cookies depending on if user is logged in
+    // Get schemes from database or cookies depending on if user is logged in
     let schemes;
     if (localStorage.getItem('synesthizeUserData')) {
       // Handle scheme-name checking when hitting API endpoint
@@ -64,6 +67,7 @@ export default function AddSchema({setCookie, cookies}) {
 
     // Create new scheme object
     const newScheme = {name, notes};
+    let schemeObj = {name: name, notes: notes};
 
     // Save to database or cookies depending on if user is logged in
     if (localStorage.getItem('synesthizeUserData')) {
@@ -71,7 +75,7 @@ export default function AddSchema({setCookie, cookies}) {
 
       try {
         await API.addScheme({userId, name, notes});
-        window.location.href = '/';
+        navigate('/', {state:{scheme: schemeObj}});
       }
       catch(apiError) {
         setError(apiError.message);
@@ -79,7 +83,7 @@ export default function AddSchema({setCookie, cookies}) {
     } else {
       schemes.push(newScheme);
       setCookie('schemeList', schemes, {path: '/'});
-      window.location.href = '/';
+      navigate('/', {state:{scheme: schemeObj}});
     }
   }
 

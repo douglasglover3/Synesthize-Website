@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { isDefaultScheme } from '../Classes/SchemeFunctions';
 import defaultSchemes from '../schemes/defaultSchemes';
 import SchemePreview from './SchemePreview'; 
@@ -33,11 +33,27 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 	useEffect(() => {
 		setSchemes(defaultSchemes.concat(userSchemes));
 	}, [userSchemes]);
-	let ind = 0;
 
 	const navigate = useNavigate();
+	const location = useLocation();
 
-	let [selectedScheme, setSelectedScheme] = useState(schemes[0]);
+	const [selectedScheme, setSelectedScheme] = useState(() => {
+		// If just opening up/reloading app, default to first scheme
+		if (location.state === null)
+			return schemes[0];
+		// Default to scheme that was just added/edited
+		else {
+			let schemeName: string = location.state.scheme.name;
+			let modifiedScheme: Scheme;
+
+			if (localStorage.getItem('synesthizeUserData'))
+				modifiedScheme = schemes[0];
+			else
+				modifiedScheme = cookies.schemeList.find(scheme => scheme.name === schemeName);
+			window.history.replaceState({}, document.title);
+			return modifiedScheme;
+		}
+	});
 	let [message, setMessage] = useState('');
 
 	const [username, setUsername] = useState('');
@@ -52,12 +68,11 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
 
     // Set <currScheme> for both <SchemeDropdown /> and <MainWindow />
     const handleSchemeChange = (e): void => {
-        let index: number = parseInt((e.target as HTMLSelectElement).value);
-        setSelectedScheme(schemes[index]);
+		let schemeName: string = e.target.value;
+        setSelectedScheme(schemes.find(scheme => scheme.name === schemeName));
 
 		// Reset any error messages
 		setMessage('');
-		setShareMessage('');
     }
 	useEffect(() => {
 		setSchemeInMain(selectedScheme);
@@ -139,7 +154,10 @@ export default function SchemeDropdown({ setSchemeInMain, setCookie, cookies }) 
         <div>
 			<div className='subsection'>
 				<select className='select-box' onChange={ handleSchemeChange }>
-					{schemes.map((scheme: Scheme) => <option key={ ind } value={ ind++ }>{ scheme.name }</option>)}
+					{schemes.map((scheme: Scheme) => 
+						<option key={scheme.name} selected={scheme.name === selectedScheme.name}>
+							{scheme.name}
+						</option>)}
 				</select>
 				<button type="button" className='button' onClick={ addScheme }>+</button>
 			</div>
