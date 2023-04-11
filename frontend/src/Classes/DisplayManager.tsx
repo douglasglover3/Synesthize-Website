@@ -6,6 +6,13 @@ const display_threshold = 5
 // TODO: Replace with extensible EDO system
 let edo = new EDOSystem(12);
 
+type Interval = {
+    name: string,
+    intervalLength: number,
+    color: string,
+    percentage: number
+}
+
 export class DisplayManager{
 	canvas: ColorCanvas;
 	counter: number;
@@ -54,13 +61,15 @@ export class DisplayManager{
 		if(this.counter >= display_threshold) { // note has reached threshold to be displayed
 			this.counter = display_threshold
 			if(this.canvas.check_inactive()) { // check if canvas is empty and not in an animation loop
-				
+				// let interval = intervals[Math.abs(this.currNote-this.prevNote)]
+				const intervalLength: number = Math.abs(this.currNote - this.prevNote);
 
-				// Can access interval information this way
-				// NOTE: Need to do it within the loop so that intervals stay up-to-date
-				console.log(intervals.length);
-				
-				let interval = intervals[Math.abs(this.currNote-this.prevNote)]
+				// See if <intervalLength> is an interval
+				let interval: Interval = intervals.find((int) => int.intervalLength === intervalLength);
+
+				// No interval found, set a default value
+				if (interval === undefined)
+					interval = {name: "", intervalLength: -1, color: "#FFFFFF", percentage: 0};
 
 				this.canvas.draw_new(this.currentScheme[note], octave, interval.color, interval.percentage) 
 			}

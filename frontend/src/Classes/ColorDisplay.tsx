@@ -22,7 +22,10 @@ function hsl_math(r,g,b){
     }
     h /= 6;
   }
-  return [h,s,l]
+
+  h = Math.round(360 * h);
+
+  return {h, s, l}
 }
 
 function to_hsl(color: string, octave: number, interval_color:string, interval_percentage:number) {
@@ -34,26 +37,26 @@ function to_hsl(color: string, octave: number, interval_color:string, interval_p
 
   // Parse result for <interval_color>
   var iresult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(interval_color);
-  var ir = parseInt(result[1], 16)/255;
-  var ig = parseInt(result[2], 16)/255;
-  var ib = parseInt(result[3], 16)/255;
+  var ir = parseInt(iresult[1], 16)/255;
+  var ig = parseInt(iresult[2], 16)/255;
+  var ib = parseInt(iresult[3], 16)/255;
 
-  let ivalues = hsl_math(ir,ig,ib)
   let values = hsl_math(r,g,b)
+  let intervalValues = hsl_math(ir,ig,ib)
 
-  let range = Math.abs(values[0] - ivalues[0])
+  let range = Math.abs(values.h - intervalValues.h)
   if(range > 180) {
     range -= 360 // flip range to go other direction around circle
   }
-  let offset = range * interval_percentage
-  values[0] = (values[0] - offset) % 360
+  let offset = Math.round(range * (interval_percentage / 100))
+  values.h = (values.h - offset) % 360
 
-  values[1] = (values[1] * 100);
-  values[1] = Math.round(values[1]);
-  values[2] = (values[2] * 100) + (5 * octave);
-  values[2] = Math.round(values[2]);
+  values.s = (values.s * 100);
+  values.s = Math.round(values.s);
+  values.l = (values.l * 100) + (5 * octave);
+  values.l = Math.round(values.l);
 
-  return 'hsl(' + values[0] + ', ' + values[1] + '%, ' + values[2] + '%)';
+  return 'hsl(' + values.h + ', ' + values.s + '%, ' + values.l + '%)';
 }
 
 export class ColorCanvas extends React.Component{
@@ -75,12 +78,12 @@ export class ColorCanvas extends React.Component{
     super(props)
 
     this.style =
-      {dislpay:'block',
+      {display:'block',
       left: "0px" ,
       bottom: "0px" ,
       background : "#000000",
       width: '100%',
-      height: '100%',
+      height: '90vh',
       WebkitFilter: "blur(3px)"}
 
     this.alpha = 0;
@@ -123,7 +126,7 @@ export class ColorCanvas extends React.Component{
     if (this.ctx != null) {
       let backgroundHeight = document.getElementById('background').clientHeight
       this.c.width = window.innerWidth
-      this.c.height = window.innerHeight - backgroundHeight;
+      this.c.height = 90 * (window.innerHeight / 100);  // Sets the height to 90vh
 
       this.clear()
       this.ctx.fillStyle = this.dis_color;
