@@ -19,7 +19,7 @@ export const AboutUs = (props) => {
                 </button>
                 <button className={toggleTab === 2 ? "tabs active-tab": "tabs"}
                 onClick = {() => toggleTab(2)}>
-                    Introduction
+                    Introduction & Download
                 </button>
                 <button className={toggleTab === 3 ? "tabs active-tab": "tabs"}
                 onClick = {() => toggleTab(3)}>
@@ -59,6 +59,8 @@ export const AboutUs = (props) => {
                     colors together using a table that we will later create which will map notes to color according to frequency since fundamentally color and sounds both have a 
                     frequency. Then the color will be displayed on the screen according to each sound the mic takes in. 
                     </p>
+
+                    <a href='/SynesthizeInstaller.exe' download>Download the application version</a>
                 </div>
                 <div className={toggleState === 3 ? "content active-content" : "content"}>
                     <p>
