@@ -1,19 +1,7 @@
 import React from "react";
-import { convertCompilerOptionsFromJson } from "typescript";
 const animation_speed = 50; // time between animation calls in ms
 
-function to_hsl(color: string, intervalColor: string, octave: number) {
-  // Parse result for <color>
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
-
-  var r = parseInt(result[1], 16);
-  var g = parseInt(result[2], 16);
-  var b = parseInt(result[3], 16);
-
-  r /= 255;
-  g /= 255;
-  b /= 255;
-
+function hsl_math(r,g,b){
   var max = Math.max(r, g, b);
   var min = Math.min(r, g, b);
 
@@ -35,45 +23,40 @@ function to_hsl(color: string, intervalColor: string, octave: number) {
     h /= 6;
   }
 
-  // Parse result for <intervalColor>
-  var resultInt = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(intervalColor);
+  h = Math.round(360 * h);
 
-  var rInt = parseInt(resultInt[1], 16);
-  var gInt = parseInt(resultInt[2], 16);
-  var bInt = parseInt(resultInt[3], 16);
+  return {h, s, l}
+}
 
-  rInt /= 255;
-  gInt /= 255;
-  bInt /= 255;
+function to_hsl(color: string, octave: number, interval_color:string, interval_percentage:number) {
+  // Parse result for <color>
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
+  var r = parseInt(result[1], 16)/255;
+  var g = parseInt(result[2], 16)/255;
+  var b = parseInt(result[3], 16)/255;
 
-  var maxInt = Math.max(rInt, gInt, bInt);
-  var minInt = Math.min(rInt, gInt, bInt);
+  // Parse result for <interval_color>
+  var iresult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(interval_color);
+  var ir = parseInt(iresult[1], 16)/255;
+  var ig = parseInt(iresult[2], 16)/255;
+  var ib = parseInt(iresult[3], 16)/255;
 
-  var hInt = (maxInt + minInt) / 2;
-  var sInt = (maxInt + minInt) / 2;
-  var lInt = (maxInt + minInt) / 2;
+  let values = hsl_math(r,g,b)
+  let intervalValues = hsl_math(ir,ig,ib)
 
-  if (maxInt === minInt) {
-    hInt = sInt = 0; // achromatic
+  let range = Math.abs(values.h - intervalValues.h)
+  if(range > 180) {
+    range -= 360 // flip range to go other direction around circle
   }
-  else {
-    var dInt = maxInt - minInt;
-    sInt = lInt > 0.5 ? dInt / (2 - maxInt - minInt) : dInt / (maxInt + minInt);
-    switch (maxInt) {
-      case rInt: hInt = (gInt - bInt) / dInt + (gInt < bInt ? 6 : 0); break;
-      case gInt: hInt = (bInt - rInt) / dInt + 2; break;
-      case bInt: hInt = (rInt - gInt) / dInt + 4; break;
-    }
-    hInt /= 6;
-  }
+  let offset = Math.round(range * (interval_percentage / 100))
+  values.h = (values.h - offset) % 360
 
-  s = (s * 100);
-  s = Math.round(s);
-  l = (l * 100) + (5 * octave);
-  l = Math.round(l);
-  h = Math.round(360 * (h+hInt));
+  values.s = (values.s * 100);
+  values.s = Math.round(values.s);
+  values.l = (values.l * 100) + (5 * octave);
+  values.l = Math.round(values.l);
 
-  return 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
+  return 'hsl(' + values.h + ', ' + values.s + '%, ' + values.l + '%)';
 }
 
 export class ColorCanvas extends React.Component{
@@ -114,13 +97,13 @@ export class ColorCanvas extends React.Component{
     this.ctx = this.c.getContext('2d');
   }
 
-  draw_new(color: string, octave: number, intervalColor: string) {
+  draw_new(color: string, octave: number, interval_color:string, interval_percentage:number ) {
     if(this.c == undefined) {
       this.set_ctx()
     }
     
     this.clear()
-    this.dis_color = to_hsl(color, intervalColor, octave);
+    this.dis_color = to_hsl(color, octave, interval_color, interval_percentage);
 
     this.size = Math.random() * (75 - 25) + 25;
     this.x = Math.round(Math.random() * ((this.c.width - this.size) - this.size) + this.size);
@@ -143,9 +126,8 @@ export class ColorCanvas extends React.Component{
     if (this.ctx != null) {
       let backgroundHeight = document.getElementById('background').clientHeight
       this.c.width = window.innerWidth
-      // this.c.height = window.innerHeight - backgroundHeight;
-      this.c.height = 90 * (window.innerHeight / 100);  // Sets the height to 75vh
-      
+      this.c.height = 90 * (window.innerHeight / 100);  // Sets the height to 90vh
+
       this.clear()
       this.ctx.fillStyle = this.dis_color;
       this.ctx.beginPath()
